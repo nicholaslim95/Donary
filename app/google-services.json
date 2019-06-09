@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "138953582685",
+    "firebase_url": "https://donary-57fe1.firebaseio.com",
+    "project_id": "donary-57fe1",
+    "storage_bucket": "donary-57fe1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138953582685:android:5ee65e1224b6729a",
+        "android_client_info": {
+          "package_name": "com.example.donary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "138953582685-9c5n2svpbvibqqdnn81tt6kn639cum7i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.donary",
+            "certificate_hash": "afcf27d60f91c8a54ebaa427817e87cff8be3995"
+          }
+        },
+        {
+          "client_id": "138953582685-k34vddels4fd1hs005urgojg2mv0bkd7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3pltxu065JAWH_006XnZXN3aAfTkKV-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "138953582685-k34vddels4fd1hs005urgojg2mv0bkd7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
