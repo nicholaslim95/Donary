@@ -12,7 +12,6 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +30,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.util.HashMap;
 
 public class AddDonationActivity extends AppCompatActivity {
-
     Uri imageUri;
     String myUrl = "";
     StorageTask uploadTask;
@@ -40,7 +38,6 @@ public class AddDonationActivity extends AppCompatActivity {
     ImageView back, image_added;
     TextView donate;
     EditText Title;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +53,7 @@ public class AddDonationActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AddDonationActivity.this, MainActivity.class));
+                startActivity(new Intent(AddDonationActivity.this, Homepage.class));
                 finish();
             }
         });
@@ -71,7 +68,6 @@ public class AddDonationActivity extends AppCompatActivity {
         CropImage.activity()
                 .setAspectRatio(1,1)
                 .start(AddDonationActivity.this);
-
     }
 
     private  String getFileExtension(Uri uri){
@@ -119,7 +115,7 @@ public class AddDonationActivity extends AppCompatActivity {
 
                         progressDialog.dismiss();
 
-                        startActivity(new Intent(AddDonationActivity.this, MainActivity.class));
+                        startActivity(new Intent(AddDonationActivity.this, Homepage.class));
                         finish();
                     }else{
                         Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
@@ -149,7 +145,7 @@ public class AddDonationActivity extends AppCompatActivity {
         else
         {
             Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(AddDonationActivity.this, MainActivity.class));
+            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
             finish();
         }
     }
