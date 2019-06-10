@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,7 +50,6 @@ public class Register extends AppCompatActivity {
                     String user_email = txtEmail.getText().toString().trim();
                     String user_password = txtPassword.getText().toString().trim();
 
-                    Toast.makeText(Register.this, "Validate is true in button click", Toast.LENGTH_SHORT).show();
                     firebaseAuth.createUserWithEmailAndPassword(user_email, user_password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -71,7 +71,6 @@ public class Register extends AppCompatActivity {
     private Boolean validate(){
 
         Boolean result = false;
-        Toast.makeText(Register.this, "Validate function running", Toast.LENGTH_SHORT).show();
         email = txtEmail.getText().toString();
         password = txtPassword.getText().toString();
         username = txt_username.getText().toString();
@@ -80,7 +79,6 @@ public class Register extends AppCompatActivity {
         if(username.isEmpty() || email.isEmpty() || password.isEmpty()){
             Toast.makeText(Register.this, "Please enter all the details", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(Register.this, "Result is true", Toast.LENGTH_SHORT).show();
             result = true;
         }
         return result;
@@ -93,7 +91,9 @@ public class Register extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
+                        System.out.println("Happens before upload user");
                         sendUserData(); //considered placing in after verification
+                        System.out.println("Happens after upload user");
                         Toast.makeText(Register.this, "Successfully registered, verification mail sent", Toast.LENGTH_SHORT).show();
                         //Because .createUserWithEmailAndPassword actually signs in users, so sign out 1st to wait verification
                         firebaseAuth.signOut();
@@ -110,7 +110,12 @@ public class Register extends AppCompatActivity {
     private void sendUserData(){
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference myRef = firebaseDatabase.getReference(firebaseAuth.getUid());
+        System.out.println("The uid " + firebaseAuth.getUid());
+        System.out.println("Database reference: " + myRef );
         UserProfile userProfile = new UserProfile(age, email, username);
+        System.out.println("userProfile.age" + userProfile.getUserAge());
+        System.out.println("userProfile.email" + userProfile.getUserEmail());
+        System.out.println("userProfile.username" + userProfile.getUserName());
         myRef.setValue(userProfile);
     }
 }

@@ -35,6 +35,9 @@ public class Homepage extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
+            case R.id.item_profile:
+                openProfileActivity();
+                return true;
             case R.id.item_settings:
                 openSettingsActivity();
                 return true;
@@ -73,6 +76,11 @@ public class Homepage extends AppCompatActivity {
 
     private void openSettingsActivity() {
         Intent intent = new Intent(this, Settings.class);
+        startActivity(intent);
+    }
+
+    private void openProfileActivity(){
+        Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 }
