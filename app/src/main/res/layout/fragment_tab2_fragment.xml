@@ -11,4 +11,10 @@
         android:layout_height="match_parent"
         android:text="Tab2" />
 
+    <Button
+        android:id="@+id/btn_my"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
 </FrameLayout>
