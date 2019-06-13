@@ -21,7 +21,7 @@ import org.w3c.dom.Text;
 public class ProfileActivity extends AppCompatActivity {
 
     private TextView txt_name, txt_age, txt_email;
-    private Button btn_update_profile_info;
+    private Button btn_update_profile_info, btn_change_password;
     private ImageView img_profilePicture;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;

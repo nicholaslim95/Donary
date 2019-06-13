@@ -2,7 +2,7 @@ package com.example.donary.models;
 
 public class ModelPost {
 
-    String donateid,posImage, donater, Title;
+    String donateid,posImage, donater, title; //all postTitle were originally title
 
     public ModelPost() {
     }
@@ -11,7 +11,7 @@ public class ModelPost {
         this.donateid = donateid;
         this.posImage = posImage;
         this.donater = donater;
-        Title = title;
+        this.title = title;
     }
 
     public String getDonateid() {
@@ -39,10 +39,10 @@ public class ModelPost {
     }
 
     public String getTitle() {
-        return Title;
+        return this.title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 }
