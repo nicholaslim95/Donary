@@ -127,6 +127,7 @@ public class AddDonationActivity extends AppCompatActivity {
                         hashMap.put("condition", etCondition.getText().toString());
                         hashMap.put("donater",   user.getUid());
                         hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+                        hashMap.put("status",   "Available");
 
                         reference.child(donateid).setValue(hashMap);
 

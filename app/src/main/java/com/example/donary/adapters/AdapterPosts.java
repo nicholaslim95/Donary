@@ -63,6 +63,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         String donateid = postList.get(i).getDonateid();
         String pdescription = postList.get(i).getDescription();
         String pTime = postList.get(i).getTime();
+        String pStatus = postList.get(i).getStatus();
 
         //convert time to dd/mm/yyyy hh:mm am/pm
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -79,7 +80,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         });
 
         //set the post data
-        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new)");
+        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) "+pStatus);
         myHolder.pDescriptionTv.setText(pdescription);
         myHolder.pTimeTv.setText(sTime);
 
