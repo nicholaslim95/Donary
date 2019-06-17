@@ -55,6 +55,7 @@ public class tab3_fragment extends Fragment {
     }
 
     private void loadPosts() {
+        //load posts from firebase
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("donates");
 
         ref.addValueEventListener(new ValueEventListener() {

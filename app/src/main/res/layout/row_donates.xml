@@ -19,18 +19,20 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-<!--            <com.blogspot.atifsoftware.circularimageview.CircularImageView-->
-<!--                android:id="@+id/uPictureIv"-->
-<!--                android:scaleType="center"-->
-<!--                android:src="@drawable/ic_default_img"-->
-<!--                android:layout_width="50dp"-->
-<!--                android:layout_height="50dp" />-->
+            <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+                android:id="@+id/uPictureIv"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_default_img"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>
+
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1">
+
                 <TextView
                     android:id="@+id/uNameTv"
                     android:layout_width="wrap_content"
@@ -42,83 +44,79 @@
                     android:id="@+id/pTimeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="33 min">
-
-                </TextView>
+                    android:text="33 min"/>
 
             </LinearLayout>
-            <ImageButton
-                android:id="@+id/moreBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:src="@drawable/ic_more_black">
-            </ImageButton>
+
+        <ImageButton
+            android:id="@+id/moreBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_more_black">
+        </ImageButton>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/pTitleTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:autoLink="all"
+        android:text="Title"/>
+    <TextView
+        android:id="@+id/pDescriptionTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The description of the donation post"
+        android:autoLink="all"/>
+
+    <ImageView
+        android:id="@+id/pImageIv"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/cardview_light_background"/>
+
+    <TextView
+        android:id="@+id/pInterestTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="15 peoples Interested"
+        android:textColor="@color/colorPrimary"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F5F0F0"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:id="@+id/interestBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Interest"
+            android:drawableLeft="@drawable/ic_interest"
+            android:background="@color/cardview_light_background"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/ic_interest"/>
+        <Button
+            android:id="@+id/commentBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Comment"
+            android:drawableLeft="@drawable/ic_comment"
+            android:background="@color/cardview_light_background"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/ic_comment"/>
 
         </LinearLayout>
-         <TextView
-                android:id="@+id/pTitleTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textStyle="bold"
-             android:autoLink="all"
-                android:text="Title"/>
-            <TextView
-                android:id="@+id/pDescriptionTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="The description of the donation post"
-                android:autoLink="all"/>
-
-            <ImageView
-                android:id="@+id/pImageIv"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@color/cardview_light_background"/>
-
-        <TextView
-            android:id="@+id/pInterestTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="15 peoples Interested"
-            android:textColor="@color/colorPrimary"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#F5F0F0"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <Button
-                android:id="@+id/interestBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Interest"
-                android:drawableLeft="@drawable/ic_interest"
-                android:background="@color/cardview_light_background"
-                android:drawablePadding="5dp"
-                android:drawableStart="@drawable/ic_interest"/>
-            <Button
-                android:id="@+id/commentBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Comment"
-                android:drawableLeft="@drawable/ic_comment"
-                android:background="@color/cardview_light_background"
-                android:drawablePadding="5dp"
-                android:drawableStart="@drawable/ic_comment"/>
-
-
-        </LinearLayout>
-
-
 
     </LinearLayout>
 

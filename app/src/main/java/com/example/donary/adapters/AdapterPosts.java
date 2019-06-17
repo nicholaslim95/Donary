@@ -42,7 +42,15 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         String donater = postList.get(i).getDonater();
         String pImage = postList.get(i).getPosImage();
         String ptitle = postList.get(i).getTitle();
+        String uDp = postList.get(i).getDonatedp();
         String donateid = postList.get(i).getDonateid();
+
+        //set user default pic
+        try{
+            Picasso.get().load(uDp).placeholder(R.drawable.ic_default_img).into(myHolder.uPicturerIv);
+        }catch (Exception e){
+
+        }
 
         myHolder.pTitleTv.setText(ptitle);
 
@@ -88,7 +96,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
     class MyHolder extends RecyclerView.ViewHolder{
 
-        ImageView pImageIv;
+        ImageView pImageIv, uPicturerIv ;
         TextView pTitleTv, pInterestTv;
         ImageButton moreBtm;
         Button interestBtn, commentBtn;
@@ -96,6 +104,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         public MyHolder(@NonNull View itemView){
             super(itemView);
 
+            uPicturerIv = itemView.findViewById(R.id.uPictureIv);
             pImageIv = itemView.findViewById(R.id.pImageIv);
             pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pInterestTv = itemView.findViewById(R.id.pInterestTv);

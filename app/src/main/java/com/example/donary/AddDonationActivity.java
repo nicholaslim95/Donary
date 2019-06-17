@@ -46,7 +46,7 @@ public class AddDonationActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
         image_added = findViewById(R.id.image_added);
         donate = findViewById(R.id.donate);
-        Title = findViewById(R.id.Title);
+        Title = findViewById(R.id.etTitle);
 
         storageReference = FirebaseStorage.getInstance().getReference("donates");
 

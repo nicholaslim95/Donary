@@ -87,7 +87,7 @@ public class Register extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                               sendEmailVerification();
+                                sendEmailVerification();
                             }else{
                                 Toast.makeText(Register.this, "Registration failed", Toast.LENGTH_SHORT).show();
                             }

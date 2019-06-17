@@ -66,6 +66,27 @@
             android:layout_marginTop="15dp"
             android:hint="Title"
             android:maxLines="2"
-            android:id="@+id/Title"/>
+            android:id="@+id/etTitle"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="Condition : 90%"
+            android:maxLines="2"
+            android:id="@+id/etCondition"/>
+
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="Description"
+            android:ems="10"
+            android:lines="5"
+            android:gravity="start|top"
+            android:inputType="textMultiLine" />
+
     </LinearLayout>
+
 </LinearLayout>
