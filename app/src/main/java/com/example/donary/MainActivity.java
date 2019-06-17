@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Just an alternative, removing it soon
-        btn_other_sign_in_method = (Button) findViewById(R.id.btn_other_signin_method);
+        //btn_other_sign_in_method = (Button) findViewById(R.id.btn_other_signin_method);
         mAuth = FirebaseAuth.getInstance();
 
         //Attempt for single Facebook login button
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Building Firebase Auth UI
-        btn_other_sign_in_method.setOnClickListener(new View.OnClickListener() {
+        /*btn_other_sign_in_method.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Init provider
@@ -130,18 +130,18 @@ public class MainActivity extends AppCompatActivity {
 
                 showSignInOptions();
             }
-        });
+        });*/
 
     }
 
-    private void showSignInOptions(){
+    /*private void showSignInOptions(){
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .setTheme(R.style.FirebaseLoginTheme).setIsSmartLockEnabled(false)
                 .build(),MY_REQUEST_CODE
         );
-    }
+    }*/
 
     /*This is for Firebase Auth UI, comment for now for individual Facebook login button
     @Override
