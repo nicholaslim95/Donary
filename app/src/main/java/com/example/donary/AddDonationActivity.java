@@ -145,7 +145,8 @@ public class AddDonationActivity extends AppCompatActivity {
                 }
             });
         }else{
-            Toast.makeText(AddDonationActivity.this, "No Image Selected!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddDonationActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
         }
     }
     //ctrl + o

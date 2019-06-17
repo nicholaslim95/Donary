@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="3dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
+    app:contentPadding="5dp"
     app:cardBackgroundColor="@color/cardview_light_background">
 
     <LinearLayout
@@ -38,12 +39,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorBlack"
+                    android:paddingLeft="10dp"
                     android:text="Name"
                     android:textSize="20sp"/>
                 <TextView
                     android:id="@+id/pTimeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
                     android:text="33 min"/>
 
             </LinearLayout>
@@ -99,9 +102,11 @@
             android:id="@+id/interestBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
             android:layout_weight="1"
             android:text="Interest"
-            android:drawableLeft="@drawable/ic_interest"
+            android:drawableLeft="@drawable/ic_comment"
             android:background="@color/cardview_light_background"
             android:drawablePadding="5dp"
             android:drawableStart="@drawable/ic_interest"/>
@@ -109,9 +114,11 @@
             android:id="@+id/commentBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
             android:layout_weight="1"
             android:text="Comment"
-            android:drawableLeft="@drawable/ic_comment"
+            android:drawableRight="@drawable/ic_interest"
             android:background="@color/cardview_light_background"
             android:drawablePadding="5dp"
             android:drawableStart="@drawable/ic_comment"/>

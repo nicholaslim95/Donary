@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="15dp"
-                android:hint="90%"
+                android:hint="90"
                 android:id="@+id/etCondition"/>
         </LinearLayout>
 
