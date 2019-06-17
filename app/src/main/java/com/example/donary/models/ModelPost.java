@@ -2,17 +2,17 @@ package com.example.donary.models;
 
 public class ModelPost {
 
-    String donateid, donaterdp, posImage, donater, title; //all postTitle were originally title
+    String donateid, description, posImage, donater, title; //all postTitle were originally title
 
     public ModelPost() {
     }
 
-    public ModelPost(String donateid, String donaterdp, String posImage, String donater, String title) {
+    public ModelPost(String donateid, String description, String posImage, String donater, String title) {
         this.donateid = donateid;
         this.posImage = posImage;
         this.donater = donater;
         this.title = title;
-        this.donaterdp = donaterdp;
+        this.description = description;
 
     }
 
@@ -24,12 +24,12 @@ public class ModelPost {
         this.donateid = donateid;
     }
 
-    public String getDonatedp() {
-        return donaterdp;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDonatedp(String donaterdp) {
-        this.donaterdp = donaterdp;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPosImage() {

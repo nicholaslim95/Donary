@@ -42,7 +42,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         String donater = postList.get(i).getDonater();
         String pImage = postList.get(i).getPosImage();
         String ptitle = postList.get(i).getTitle();
-        String uDp = postList.get(i).getDonatedp();
+        String uDp = postList.get(i).getDescription();
         String donateid = postList.get(i).getDonateid();
 
         //set user default pic

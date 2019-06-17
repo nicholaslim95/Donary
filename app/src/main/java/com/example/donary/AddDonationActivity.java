@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -34,10 +35,12 @@ public class AddDonationActivity extends AppCompatActivity {
     String myUrl = "";
     StorageTask uploadTask;
     StorageReference storageReference;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser user;
 
     ImageView back, image_added;
     TextView donate;
-    EditText Title;
+    EditText Title, etDescription, etCondition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +50,14 @@ public class AddDonationActivity extends AppCompatActivity {
         image_added = findViewById(R.id.image_added);
         donate = findViewById(R.id.donate);
         Title = findViewById(R.id.etTitle);
+        etDescription = findViewById(R.id.etDescription);
+        etCondition = findViewById(R.id.etCondition);
 
         storageReference = FirebaseStorage.getInstance().getReference("donates");
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
 
+        //back to hoempage
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,9 +73,15 @@ public class AddDonationActivity extends AppCompatActivity {
             }
         });
 
-        CropImage.activity()
+        image_added.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CropImage.activity()
                 .setAspectRatio(1,1)
                 .start(AddDonationActivity.this);
+            }
+        });
+
     }
 
     private  String getFileExtension(Uri uri){
@@ -109,7 +123,10 @@ public class AddDonationActivity extends AppCompatActivity {
                         hashMap.put("donateid", donateid);
                         hashMap.put("posImage", myUrl);
                         hashMap.put("title", Title.getText().toString());
-                        hashMap.put("donater", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        hashMap.put("description", etDescription.getText().toString());
+                        hashMap.put("condition", etCondition.getText().toString());
+                        hashMap.put("donater",   user.getUid());
+                        hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
 
                         reference.child(donateid).setValue(hashMap);
 
