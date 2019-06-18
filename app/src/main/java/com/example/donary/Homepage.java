@@ -2,8 +2,6 @@ package com.example.donary;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TableLayout;
 
 
 public class Homepage extends AppCompatActivity {
@@ -70,7 +66,7 @@ public class Homepage extends AppCompatActivity {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new tab1_fragment(), "Tab1Fragment");
         adapter.addFragment(new tab2_fragment(), "Tab2Fragment");
-        adapter.addFragment(new tab3_fragment(), "Tab3Fragment");
+        adapter.addFragment(new Tab3_fragment(), "Tab3Fragment");
         viewPager.setAdapter(adapter);
     }
 

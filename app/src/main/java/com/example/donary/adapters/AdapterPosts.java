@@ -1,28 +1,42 @@
 package com.example.donary.adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.donary.AddDonationActivity;
+import com.example.donary.Homepage;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
+import com.example.donary.Tab3_fragment;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelPost;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -39,9 +53,12 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     FirebaseDatabase firebaseDatabase;
 
+    String myUid;
+
     public AdapterPosts(Context context, List<ModelPost> postList) {
         this.context = context;
         this.postList = postList;
+        myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @NonNull
@@ -56,11 +73,11 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
 
         //get data
-        String donater = postList.get(i).getDonater();
-        String pImage = postList.get(i).getPosImage();
+        final String donater = postList.get(i).getDonater();
+        final String pImage = postList.get(i).getPosImage();
         String ptitle = postList.get(i).getTitle();
         String pCondition = postList.get(i).getCondition();
-        String donateid = postList.get(i).getDonateid();
+        final String donateid = postList.get(i).getDonateid();
         String pdescription = postList.get(i).getDescription();
         String pTime = postList.get(i).getTime();
         String pStatus = postList.get(i).getStatus();
@@ -100,11 +117,14 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         });
 
+
         //action when no image in post
         if(pImage.equals("")){
             myHolder.pImageIv.setVisibility(View.GONE);
         }
         else {
+            //show imageview
+            myHolder.pImageIv.setVisibility(View.VISIBLE);
             try {
                 Picasso.get().load(pImage).into(myHolder.pImageIv);
             } catch (Exception e) {
@@ -115,8 +135,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         myHolder.moreBtm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showMoreOptions(myHolder.moreBtm, donater, myUid, donateid, pImage);
 
-                Toast.makeText(context,"More", Toast.LENGTH_LONG).show();
             }
         });
         myHolder.interestBtn.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +154,101 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         });
 
+        myHolder.profileLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*click to go to Profile Activity with uid, this uid is of clicked user
+                * which will be used to show user specific data/posts*/
+                Intent intent = new Intent(context, ProfileActivity.class);
+                intent.putExtra("donater", donater);
+                context.startActivity(intent);
+
+            }
+        });
+
+    }
+
+    private void showMoreOptions(ImageButton moreBtm, String donater, String myUid, final String donateid, final String pImage) {
+        //creating popup meny currently having option Delete,
+        PopupMenu popupMenu = new PopupMenu(context, moreBtm, Gravity.END);
+
+        //show delete option in only post(s) of currently signed-in user
+        if(donater.equals(myUid)){
+            //add item into menu
+            popupMenu.getMenu().add(Menu.NONE,0,0, "Delete");
+            popupMenu.getMenu().add(Menu.NONE,1,0, "Edit");
+        }
+
+        //item click listener
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if(id==0){
+                    //delete is clicked
+                    beginDelete(donateid, pImage);
+                }
+                else if(id==1){
+                    //Edit is clicked
+                    //start AddDonationActivity with key "editPost" and the id of the post clicked
+                    Intent intent = new Intent(context, AddDonationActivity.class);
+                    intent.putExtra("key","editDonation");
+                    intent.putExtra("editDonationId", donateid);
+                    context.startActivity(intent);
+                }
+                return false;
+            }
+        });
+
+        //show menu;
+        popupMenu.show();
+    }
+
+    private void beginDelete(String donateid, String pImage) {
+        //delete the post and image
+        deleteWithImage(donateid, pImage);
+    }
+
+    private void deleteWithImage(final String donateid, String pImage) {
+        //progress bar
+        final ProgressDialog pd = new ProgressDialog(context);
+        pd.setMessage("Deleting...");
+
+        //Delete Image using url
+        StorageReference picRef = firebaseStorage.getReferenceFromUrl(pImage);
+        picRef.delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Imaged deleted, and delete the databse now
+
+                        Query fquery = FirebaseDatabase.getInstance().getReference("donates").orderByChild("donateid").equalTo(donateid);
+                        fquery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                                    ds.getRef().removeValue(); //remove values from firebase where donateid matches
+                                }
+                                //deleted
+                                Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                                pd.dismiss();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //failure for delete and show error
+                        pd.dismiss();
+                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -149,6 +264,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         TextView pTitleTv, pInterestTv, uNameTv, pDescriptionTv, pTimeTv;
         ImageButton moreBtm;
         Button interestBtn, commentBtn;
+        LinearLayout profileLayout;
 
         public MyHolder(@NonNull View itemView){
             super(itemView);
@@ -164,6 +280,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             moreBtm = itemView.findViewById(R.id.moreBtn);
             interestBtn = itemView.findViewById(R.id.interestBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
+            profileLayout = itemView.findViewById(R.id.profileLayout);
         }
     }
 }

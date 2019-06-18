@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class tab3_fragment extends Fragment {
+public class Tab3_fragment extends Fragment {
     private static final String TAG = "Tab3Fragment";
 
         FirebaseAuth firebaseAuth;
@@ -78,6 +78,8 @@ public class tab3_fragment extends Fragment {
             }
         });
     }
+
+
 
 
 }
