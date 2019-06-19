@@ -51,6 +51,7 @@ public class Tab3_fragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
 
+        //pull down refresh
         pullToRefresh = (SwipeRefreshLayout) view.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

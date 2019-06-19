@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -52,8 +51,6 @@ public class AddDonationActivity extends AppCompatActivity {
     ImageView back, image_added;
     TextView donate;
     EditText Title, etDescription, etCondition;
-
-    final ProgressDialog progressDialog = new ProgressDialog(this);
 
 
     //info of donation post to be edited
@@ -124,15 +121,9 @@ public class AddDonationActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        finish();
-        startActivity(getIntent());
-    }
-
     private void beginUpdate(String editTitle, String editDescription, String editCondition, String editDonateId) {
 
+        final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Updating...");
         progressDialog.show();
 
@@ -146,6 +137,9 @@ public class AddDonationActivity extends AppCompatActivity {
     }
 
     private void updateWasWithImage(final String editTitle, final String editDescription, final String editDonateId) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+
         //pos is with Image, delet previous image first
         StorageReference mPicturerRef = FirebaseStorage.getInstance().getReferenceFromUrl(editImage);
         mPicturerRef.delete()
@@ -350,6 +344,4 @@ public class AddDonationActivity extends AppCompatActivity {
             finish();
         }
     }
-
-
 }
