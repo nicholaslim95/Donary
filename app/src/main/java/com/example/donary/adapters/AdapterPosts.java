@@ -240,6 +240,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                             }
                         });
                     }
+                    //PUT reload activity
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
