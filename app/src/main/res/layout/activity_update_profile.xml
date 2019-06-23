@@ -7,7 +7,7 @@
     tools:context=".UpdateProfile">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imgUpdateProfilePic"
         android:layout_width="177dp"
         android:layout_height="188dp"
         android:layout_marginStart="8dp"
@@ -30,35 +30,21 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <EditText
-        android:id="@+id/txtUpdateProfileAge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:hint="Age"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtUpdateProfileName" />
+        app:layout_constraintTop_toBottomOf="@+id/imgUpdateProfilePic" />
 
     <EditText
         android:id="@+id/txtUpdateProfileEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Email"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtUpdateProfileAge" />
+        app:layout_constraintTop_toBottomOf="@+id/txtUpdateProfileName" />
 
     <Button
         android:id="@+id/btnSaveProfileInformation"
