@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -55,6 +56,18 @@ public class AddDonationActivity extends AppCompatActivity {
 
     //info of donation post to be edited
     String editTitle, editDescription, editCondition, editImage;
+
+    //check the image view got image or not
+    private boolean hasImage(@NonNull ImageView view) {
+        Drawable drawable = view.getDrawable();
+        boolean hasImage = (drawable != null);
+
+        if (hasImage && (drawable instanceof BitmapDrawable)) {
+            hasImage = ((BitmapDrawable)drawable).getBitmap() != null;
+        }
+
+        return hasImage;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,26 +142,106 @@ public class AddDonationActivity extends AppCompatActivity {
 
         if(!editImage.equals("")){
             //without Image
-            updateWasWithImage(editTitle, editDescription, editDonateId);
+            updateWasWithImage(editTitle, editDescription, editDonateId, editCondition);
         }else{
             //with Image
 
         }
     }
 
-    private void updateWasWithImage(final String editTitle, final String editDescription, final String editDonateId) {
+    private void updateWasWithImage(final String editTitle, final String editDescription, final String editDonateId, final String editCondition) {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
-        //pos is with Image, delet previous image first
-        StorageReference mPicturerRef = FirebaseStorage.getInstance().getReferenceFromUrl(editImage);
-        mPicturerRef.delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        //Image deleted, uoload new image
-                        //for post-image name, post-id, publish time
-                        final String timeStamp = String.valueOf(System.currentTimeMillis());
+        DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("donates").child(editDonateId).child("posImage");
+        //if image no changes
+        if(imageUri.equals("")){
+
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("donateid", editDonateId);
+            hashMap.put("posImage", editImage);
+            hashMap.put("title", Title.getText().toString());
+            hashMap.put("description", etDescription.getText().toString());
+            hashMap.put("condition", etCondition.getText().toString());
+            hashMap.put("donater",   user.getUid());
+            hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+            hashMap.put("status",   "Available");
+
+            reference.child(editDonateId).setValue(hashMap);
+
+            progressDialog.dismiss();
+
+            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+            finish();
+        }
+        else {
+            //pos is with Image, delet previous image first
+            StorageReference mPicturerRef = FirebaseStorage.getInstance().getReferenceFromUrl(editImage);
+            mPicturerRef.delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            if (imageUri != null) {
+                                final StorageReference filereference = storageReference.child(System.currentTimeMillis()
+                                        + "." + getFileExtension(imageUri));
+
+                                uploadTask = filereference.putFile(imageUri);
+                                uploadTask.continueWithTask(new Continuation() {
+                                    @Override
+                                    public Object then(@NonNull Task task) throws Exception {
+                                        if (!task.isComplete()) {
+                                            throw task.getException();
+                                        }
+                                        return filereference.getDownloadUrl();
+                                    }
+                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        if (task.isSuccessful()) {
+                                            Uri downloadUri = task.getResult();
+                                            myUrl = downloadUri.toString();
+
+                                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+
+
+                                            HashMap<String, Object> hashMap = new HashMap<>();
+                                            hashMap.put("donateid", editDonateId);
+                                            hashMap.put("posImage", myUrl);
+                                            hashMap.put("title", Title.getText().toString());
+                                            hashMap.put("description", etDescription.getText().toString());
+                                            hashMap.put("condition", etCondition.getText().toString());
+                                            hashMap.put("donater", user.getUid());
+                                            hashMap.put("time", String.valueOf(System.currentTimeMillis()));
+                                            hashMap.put("status", "Available");
+
+                                            reference.child(editDonateId).setValue(hashMap);
+
+                                            progressDialog.dismiss();
+
+                                            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+                                            finish();
+                                        } else {
+                                            Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(AddDonationActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(AddDonationActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+
+                            //-------------------------------------------------------------------------
+                            //Image deleted, upload new image
+                            //for post-image name, post-id, publish time
+                        /*final String timeStamp = String.valueOf(System.currentTimeMillis());
                         String filePathAndName = "donates/" + timeStamp;
 
                         //get image from imageview
@@ -156,10 +249,12 @@ public class AddDonationActivity extends AppCompatActivity {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         //image compress
                         bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-                        byte[] data = baos.toByteArray();
+                        final byte[] data = baos.toByteArray();
 
-                        StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
-                        ref.putBytes(data)
+
+                        final StorageReference ref = FirebaseStorage.getInstance().getReference().child(filePathAndName);
+
+                        uploadTask = ref.putBytes(data)
                                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -172,7 +267,7 @@ public class AddDonationActivity extends AppCompatActivity {
                                             //url is received, upload to firebase databse
                                             HashMap<String, Object> hashMap = new HashMap<>();
                                             //put post info
-                                            hashMap.put("posImage", editImage);
+                                            hashMap.put("posImage", ref.putBytes(data));
                                             hashMap.put("title", editTitle);
                                             hashMap.put("description", editDescription);
                                             hashMap.put("condition", editCondition);
@@ -180,8 +275,8 @@ public class AddDonationActivity extends AppCompatActivity {
                                             hashMap.put("time",   timeStamp);
                                             hashMap.put("status",   "Available");
 
-                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("donates");
-                                            ref.child(editDonateId)
+                                            DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("donates");
+                                            ref1.child(editDonateId)
                                                     .updateChildren(hashMap)
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
@@ -207,16 +302,17 @@ public class AddDonationActivity extends AppCompatActivity {
                                         progressDialog.dismiss();
                                         Toast.makeText(AddDonationActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(AddDonationActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                });*/
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(AddDonationActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
 
 
     }
@@ -241,7 +337,7 @@ public class AddDonationActivity extends AppCompatActivity {
                     etCondition.setText(editCondition);
 
                     //set image
-                    if(!editImage.equals("noImage")){
+                    if(!editImage.equals("")){
                         try{
                             Picasso.get().load(editImage).into(image_added);
                         }catch (Exception e){

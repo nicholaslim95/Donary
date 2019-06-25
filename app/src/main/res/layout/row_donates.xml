@@ -101,24 +101,26 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
+
         <Button
-            android:id="@+id/interestBtn"
+            android:id="@+id/requestBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
             android:layout_weight="1"
-            android:text="Interest"
-            android:drawableLeft="@drawable/ic_comment"
             android:background="@color/cardview_light_background"
+            android:drawableStart="@drawable/ic_interest"
+            android:drawableLeft="@drawable/ic_comment"
             android:drawablePadding="5dp"
-            android:drawableStart="@drawable/ic_interest"/>
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Request" />
+
         <Button
             android:id="@+id/commentBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
             android:layout_weight="1"
             android:text="Comment"
             android:drawableRight="@drawable/ic_interest"

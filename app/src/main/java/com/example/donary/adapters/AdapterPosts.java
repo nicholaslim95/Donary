@@ -3,6 +3,7 @@ package com.example.donary.adapters;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -18,20 +19,19 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.AddDonationActivity;
-import com.example.donary.Homepage;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
-import com.example.donary.Tab3_fragment;
 import com.example.donary.UserProfile;
+import com.example.donary.ViewRequestsActivity;
 import com.example.donary.models.ModelPost;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +43,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,6 +53,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     List<ModelPost> postList;
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     FirebaseDatabase firebaseDatabase;
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
     String myUid;
 
@@ -65,9 +67,9 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_donates, viewGroup, false);
-
         return new MyHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
@@ -81,6 +83,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         String pdescription = postList.get(i).getDescription();
         String pTime = postList.get(i).getTime();
         String pStatus = postList.get(i).getStatus();
+
+        final ModelPost post = postList.get(i);
 
         //convert time to dd/mm/yyyy hh:mm am/pm
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -96,11 +100,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         });
 
-        //set the post data
-        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) "+pStatus);
-        myHolder.pDescriptionTv.setText(pdescription);
-        myHolder.pTimeTv.setText(sTime);
-
         //display the user name
         firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("Users").child(donater);
@@ -109,6 +108,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 myHolder.uNameTv.setText(userProfile.getUserName());
+
             }
 
             @Override
@@ -117,6 +117,10 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         });
 
+        //set the post data
+        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) "+pStatus);
+        myHolder.pDescriptionTv.setText(pdescription);
+        myHolder.pTimeTv.setText(sTime);
 
         //action when no image in post
         if(pImage.equals("")){
@@ -132,6 +136,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         }
 
+
+
         myHolder.moreBtm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,13 +145,52 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
             }
         });
-        myHolder.interestBtn.setOnClickListener(new View.OnClickListener() {
+
+        myHolder.requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Owner of the donation post will got to the user request page for that donation item.
+                if(post.getDonater().equals(firebaseUser.getUid())){
 
-                Toast.makeText(context,"Interest", Toast.LENGTH_LONG).show();
+                    //check whether got requester for that donation
+                    if(myHolder.requestBtn.getText().equals("No Requests")){
+                        Toast.makeText(context,"Don't have Requester", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        Intent intent = new Intent(context, ViewRequestsActivity.class);
+                        context.startActivity(intent);
+                    }
+
+                }
+                else{
+                    if (myHolder.requestBtn.getText().equals("Request")){
+
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
+                                .child(post.getDonateid()).child(firebaseUser.getUid());
+
+
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("requester", firebaseUser.getUid());
+                        hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+                        hashMap.put("status",   "Requesting");
+
+                        reference.setValue(hashMap);
+                        Toast.makeText(context,"Requested", Toast.LENGTH_LONG).show();
+
+                    }else{
+                        FirebaseDatabase.getInstance().getReference().child("Request")
+                                .child(post.getDonateid()).child(firebaseUser.getUid()).removeValue();
+                        Toast.makeText(context,"Request Cancelled", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+
             }
         });
+        //count the number of requests for donation post
+        isRequest(post.getDonateid(), myHolder.requestBtn);
+        nrRequests(myHolder.pInterestTv, post.getDonateid());
+
         myHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,6 +297,78 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                 });
     }
 
+    //check personal whether got requests for particular post
+    private void isRequest(String donateId, final Button button){
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Request")
+                .child(donateId);
+
+        final DatabaseReference donateref = FirebaseDatabase.getInstance().getReference()
+                .child("donates").child(donateId).child("donater");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot1) {
+
+                //changes the post request button to "View Requests" button for owner
+                donateref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+                        if(dataSnapshot2.getValue().equals(firebaseUser.getUid())){
+                            if(dataSnapshot1.getChildrenCount() >= 1){
+                                button.setText("View Requests");
+                            }else {
+                                button.setText("No Requests");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                //if not owner for that post
+                if(dataSnapshot1.child(firebaseUser.getUid()).exists()){
+                    button.setText("Requested");
+                    button.setBackgroundColor(Color.rgb(255,222,173));
+                }
+                else{
+                    button.setText("Request");
+                    button.setBackgroundColor(Color.rgb(255,255,255));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    //COUNT NUMBER OF REQUEST FOR A DONATION POST
+    private void nrRequests(final TextView requests, String donateId){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Request")
+                .child(donateId);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                requests.setText(dataSnapshot.getChildrenCount()+ " requests");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     @Override
     public int getItemCount() {
         return postList.size();
@@ -264,7 +381,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         ImageView pImageIv, uPicturerIv ;
         TextView pTitleTv, pInterestTv, uNameTv, pDescriptionTv, pTimeTv;
         ImageButton moreBtm;
-        Button interestBtn, commentBtn;
+        Button requestBtn, commentBtn;
         LinearLayout profileLayout;
 
         public MyHolder(@NonNull View itemView){
@@ -279,7 +396,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pInterestTv = itemView.findViewById(R.id.pInterestTv);
             moreBtm = itemView.findViewById(R.id.moreBtn);
-            interestBtn = itemView.findViewById(R.id.interestBtn);
+            requestBtn = itemView.findViewById(R.id.requestBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
             profileLayout = itemView.findViewById(R.id.profileLayout);
         }
