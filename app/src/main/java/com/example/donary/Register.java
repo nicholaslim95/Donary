@@ -33,7 +33,7 @@ import java.io.IOException;
 public class Register extends AppCompatActivity {
 
     private Button btn_register;
-    private EditText txtEmail, txtPassword, txt_username, txt_age;
+    private EditText txtEmail, txtPassword, txt_username;
     private FirebaseAuth firebaseAuth;
     private ImageView userProfilePic;
 
@@ -41,7 +41,7 @@ public class Register extends AppCompatActivity {
     private StorageReference storageReference; //Storage reference is the Firebase root directory
     private static int PICK_IMAGE = 123;
     Uri imagePath;
-    String email, password, username, age;
+    String email, password, username;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -72,7 +72,6 @@ public class Register extends AppCompatActivity {
         txt_username = (EditText) findViewById(R.id.txtRegisterUsername);
         //Place user name here
         btn_register = (Button) findViewById(R.id.btnRegister);
-        txt_age = (EditText) findViewById(R.id.txtRegisterAge);
         userProfilePic = (ImageView) findViewById(R.id.imgRegisterProfile);
 
         btn_register.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +117,6 @@ public class Register extends AppCompatActivity {
         email = txtEmail.getText().toString();
         password = txtPassword.getText().toString();
         username = txt_username.getText().toString();
-        age = txt_age.getText().toString();
 
         if(username.isEmpty() || email.isEmpty() || password.isEmpty() || imagePath == null){
             Toast.makeText(Register.this, "Please enter all the details", Toast.LENGTH_SHORT).show();
@@ -167,7 +165,7 @@ public class Register extends AppCompatActivity {
                 Toast.makeText(Register.this, "Upload successful", Toast.LENGTH_SHORT).show();
             }
         });
-        UserProfile userProfile = new UserProfile(age, email, username);
+        UserProfile userProfile = new UserProfile(email, username);
         myRef.setValue(userProfile);
     }
 }

@@ -28,7 +28,7 @@ import org.w3c.dom.Text;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView txt_name, txt_age, txt_email;
+    private TextView txt_name, txt_email;
     private Button btn_update_profile_info;
     private ImageView img_profilePicture;
     private FirebaseAuth firebaseAuth;
@@ -41,7 +41,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         img_profilePicture = (ImageView) findViewById(R.id.imgProfilePicture);
         txt_name = (TextView) findViewById(R.id.txtProfileName);
-        txt_age = (TextView) findViewById(R.id.txtProfileAge);
         txt_email = (TextView) findViewById(R.id.txtProfileEmail);
         btn_update_profile_info = (Button) findViewById(R.id.btnUpdateProfileInfo);
 
@@ -65,7 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
                 System.out.println("datasnapshotb stuff" + dataSnapshot.getValue(UserProfile.class));
                 System.out.println("userProfileActivity" + userProfile.getUserName());
                 txt_name.setText(userProfile.getUserName());
-                txt_age.setText(userProfile.getUserAge());
                 txt_email.setText(userProfile.getUserEmail());
             }
 

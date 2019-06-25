@@ -22,31 +22,23 @@ import com.google.firebase.auth.FirebaseAuth;
 public class tab1_fragment extends Fragment {
     private static final String TAG = "Tab1Fragment";
 
-    Button testBtnLogout;
+    Button btnCreateEvent;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab1_fragment, container, false);
-        testBtnLogout = (Button) view.findViewById(R.id.testBtnLogout);
 
-        testBtnLogout.setOnClickListener(new View.OnClickListener() {
+        btnCreateEvent = (Button) view.findViewById(R.id.btnCreateEvent);
+
+        btnCreateEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Logout
-               FirebaseAuth.getInstance().signOut();
-               //Just a test, or else look back on login manager
-                LoginManager.getInstance().logOut();
-               openMainActivity();
+                Intent intent = new Intent(getActivity(), CreateEvent.class);
+                startActivity(intent);
             }
         });
         return view;
-    }
-
-    private void openMainActivity() {
-        
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        startActivity(intent);
     }
 
 
