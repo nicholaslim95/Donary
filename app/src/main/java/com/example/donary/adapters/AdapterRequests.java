@@ -61,6 +61,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
 
+        String reason = requestList.get(i).getReason();
         //get data
         String requester = requestList.get(i).getRequester();
         String requestTime = requestList.get(i).getTime();
@@ -98,6 +99,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
 
         //set the requester data
         myHolder.requestTimeTv.setText(sTime);
+        myHolder.pReasonTv.setText(reason);
 
 
 
@@ -122,7 +124,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
 
         //views from row_post.xml
         ImageView requesterIv ;
-        TextView requesterNameTv, requestTimeTv;
+        TextView requesterNameTv, requestTimeTv, pReasonTv;
         Button acceptBtn, rejectBtn;
         LinearLayout requesterLayout;
 
@@ -136,6 +138,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
             acceptBtn = itemView.findViewById(R.id.acceptBtn);
             rejectBtn = itemView.findViewById(R.id.rejectBtn);
             requesterLayout = itemView.findViewById(R.id.requesterLayout);
+            pReasonTv = itemView.findViewById(R.id.pReasonTv);
         }
     }
 }

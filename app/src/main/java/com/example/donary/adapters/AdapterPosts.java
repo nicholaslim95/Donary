@@ -1,11 +1,14 @@
 package com.example.donary.adapters;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.Gravity;
@@ -15,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.AddDonationActivity;
+import com.example.donary.Homepage;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
@@ -122,33 +127,29 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         myHolder.pDescriptionTv.setText(pdescription);
         myHolder.pTimeTv.setText(sTime);
 
-        //action when no image in post
-        if(pImage.equals("")){
-            myHolder.pImageIv.setVisibility(View.GONE);
+        try {
+            Picasso.get().load(pImage).into(myHolder.pImageIv);
+        } catch (Exception e) {
+
         }
-        else {
-            //show imageview
-            myHolder.pImageIv.setVisibility(View.VISIBLE);
-            try {
-                Picasso.get().load(pImage).into(myHolder.pImageIv);
-            } catch (Exception e) {
-
-            }
-        }
-
-
 
         myHolder.moreBtm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showMoreOptions(myHolder.moreBtm, donater, myUid, donateid, pImage);
-
             }
         });
 
         myHolder.requestBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
+                final Dialog requestDialog = new Dialog(context);
+                requestDialog.setContentView(R.layout.request_reson_dialog);
+                final EditText reason = (EditText)requestDialog.findViewById(R.id.requestreason);
+                Button saveReason = (Button)requestDialog.findViewById(R.id.save);
+
                 //Owner of the donation post will got to the user request page for that donation item.
                 if(post.getDonater().equals(firebaseUser.getUid())){
 
@@ -165,18 +166,26 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                 else{
                     if (myHolder.requestBtn.getText().equals("Request")){
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
-                                .child(post.getDonateid()).child(firebaseUser.getUid());
+                        reason.setEnabled(true);
+                        saveReason.setEnabled(true);
+                        requestDialog.show();
+                        saveReason.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
+                                        .child(post.getDonateid()).child(firebaseUser.getUid());
 
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("requester", firebaseUser.getUid());
+                                hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+                                hashMap.put("reason", "Reason: " + reason.getText().toString());
+                                hashMap.put("status",   "Requesting");
 
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("requester", firebaseUser.getUid());
-                        hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
-                        hashMap.put("status",   "Requesting");
-
-                        reference.setValue(hashMap);
-                        Toast.makeText(context,"Requested", Toast.LENGTH_LONG).show();
-
+                                reference.setValue(hashMap);
+                                requestDialog.cancel();
+                                Toast.makeText(context,"Requested", Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }else{
                         FirebaseDatabase.getInstance().getReference().child("Request")
                                 .child(post.getDonateid()).child(firebaseUser.getUid()).removeValue();
@@ -187,6 +196,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
             }
         });
+
         //count the number of requests for donation post
         isRequest(post.getDonateid(), myHolder.requestBtn);
         nrRequests(myHolder.pInterestTv, post.getDonateid());
@@ -260,19 +270,20 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         pd.setMessage("Deleting...");
 
         //Delete Image using url
-        StorageReference picRef = firebaseStorage.getReferenceFromUrl(pImage);
+        StorageReference picRef = FirebaseStorage.getInstance().getReferenceFromUrl(pImage);
         picRef.delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         //Imaged deleted, and delete the databse now
-
                         Query fquery = FirebaseDatabase.getInstance().getReference("donates").orderByChild("donateid").equalTo(donateid);
                         fquery.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot ds: dataSnapshot.getChildren()){
-                                    ds.getRef().removeValue(); //remove values from firebase where donateid matches
+                                if (dataSnapshot.exists()) {
+                                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                        ds.getRef().removeValue(); //remove values from firebase where donateid matches
+                                    }
                                 }
                                 //deleted
                                 Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_SHORT).show();

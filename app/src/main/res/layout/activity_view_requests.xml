@@ -30,17 +30,6 @@
                     android:src="@drawable/ic_back"
                     android:id="@+id/back"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Save"
-                    android:id="@+id/save"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:textColor="@color/colorPrimary"/>
-
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 

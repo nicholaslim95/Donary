@@ -1,12 +1,16 @@
 package com.example.donary;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.donary.adapters.AdapterRequests;
@@ -29,6 +33,7 @@ public class ViewRequestsActivity extends AppCompatActivity {
     AdapterRequests AdapterRequests;
     View view;
     SwipeRefreshLayout pullToRefresh;
+    ImageView back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,7 @@ public class ViewRequestsActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
+        back = findViewById(R.id.back);
         recyclerView = findViewById(R.id.requestRecyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(ViewRequestsActivity.this);
         layoutManager.setStackFromEnd(true);
@@ -57,6 +63,26 @@ public class ViewRequestsActivity extends AppCompatActivity {
         });
         loadRequests();
 
+        //back to hoempage
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //back previous fragment
+                onBackPressed();
+            }
+        });
+
+    }
+
+    //back to previous fragment
+    @Override
+    public void onBackPressed(){
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void loadRequests() {
