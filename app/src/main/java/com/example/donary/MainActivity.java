@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_other_sign_in_method, btn_login;
     private LoginButton btnfbLogin;
     private CallbackManager callbackManager;
-    private TextView txtRegister;
+    private TextView txtRegister, txt_forgot_password;
     private EditText txt_email, txt_password;
     private ProgressDialog progressDialog;
     //Firebase login
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         txt_email = (EditText) findViewById(R.id.txtLoginEmail);
         txt_password = (EditText) findViewById(R.id.txtLoginPassword);
-
+        txt_forgot_password = (TextView) findViewById(R.id.txtForgotPassword);
         mAuth = FirebaseAuth.getInstance();
 
         progressDialog = new ProgressDialog(this);
@@ -85,6 +85,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openRegisterActivity();
+            }
+        });
+
+        txt_forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ForgotPassword.class));
             }
         });
 
