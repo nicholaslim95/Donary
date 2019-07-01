@@ -1,6 +1,7 @@
 package com.example.donary;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -56,6 +57,22 @@ public class Homepage extends AppCompatActivity {
         //Applying custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Bundle intent = getIntent().getExtras();
+        if (intent != null){
+            String commenter = intent.getString("commenter");
+            SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+            editor.putString("profileid", commenter);
+            editor.apply();
+
+            //put intent to go to specific user profile activity
+            openProfileActivity();
+            /*getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                    ,new Tab3_fragment()).commit();*/
+        }else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                    ,new tab1_fragment()).commit();
+        }
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);

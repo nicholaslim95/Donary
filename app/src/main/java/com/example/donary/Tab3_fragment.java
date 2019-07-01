@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.donary.adapters.AdapterPosts;
+import com.example.donary.adapters.CommentAdapter;
 import com.example.donary.models.ModelPost;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +36,9 @@ public class Tab3_fragment extends Fragment {
         RecyclerView recyclerView;
         List<ModelPost> postList;
         AdapterPosts adapterPosts;
+        RecyclerView RvComment;
+        CommentAdapter commentAdapter;
+        String donateid;
 
     SwipeRefreshLayout pullToRefresh;
     @Nullable
@@ -66,6 +70,7 @@ public class Tab3_fragment extends Fragment {
 
         return view;
     }
+
 
     private void loadPosts() {
         //load posts from firebase

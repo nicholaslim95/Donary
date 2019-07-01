@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.Gravity;
@@ -27,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.AddDonationActivity;
-import com.example.donary.Homepage;
+import com.example.donary.CommentsActivity;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
@@ -200,12 +198,14 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         //count the number of requests for donation post
         isRequest(post.getDonateid(), myHolder.requestBtn);
         nrRequests(myHolder.pInterestTv, post.getDonateid());
-
+        getComments(post.getDonateid(), myHolder.pCommentTv);
         myHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast.makeText(context,"Comment", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, CommentsActivity.class);
+                intent.putExtra("donateid", post.getDonateid());
+                intent.putExtra("commenter", post.getDonater());
+                context.startActivity(intent);
             }
         });
 
@@ -221,6 +221,22 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             }
         });
 
+    }
+
+    private void getComments(String donateid, final TextView comments){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Comments").child(donateid);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                comments.setText(dataSnapshot.getChildrenCount() + "Comments");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void showMoreOptions(ImageButton moreBtm, String donater, String myUid, final String donateid, final String pImage) {
@@ -390,7 +406,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
         //views from row_post.xml
         ImageView pImageIv, uPicturerIv ;
-        TextView pTitleTv, pInterestTv, uNameTv, pDescriptionTv, pTimeTv;
+        TextView pTitleTv, pInterestTv, pCommentTv, uNameTv, pDescriptionTv, pTimeTv;
         ImageButton moreBtm;
         Button requestBtn, commentBtn;
         LinearLayout profileLayout;
@@ -406,6 +422,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             pImageIv = itemView.findViewById(R.id.pImageIv);
             pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pInterestTv = itemView.findViewById(R.id.pInterestTv);
+            pCommentTv = itemView.findViewById(R.id.pCommentTv);
             moreBtm = itemView.findViewById(R.id.moreBtn);
             requestBtn = itemView.findViewById(R.id.requestBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);

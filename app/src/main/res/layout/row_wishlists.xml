@@ -88,13 +88,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/pInterestTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15 peoples Interested"
-                android:layout_alignParentLeft="true"
-                android:textColor="@color/colorPrimary"/>
 
             <TextView
                 android:id="@+id/pCommentTv"
@@ -119,30 +112,15 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/requestBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/cardview_light_background"
-            android:drawableStart="@drawable/ic_interest"
-            android:drawableLeft="@drawable/ic_comment"
-            android:drawablePadding="5dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:text="Request" />
-
-        <Button
             android:id="@+id/commentBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
             android:layout_weight="1"
-            android:text="Comment"
-            android:drawableRight="@drawable/ic_interest"
             android:background="@color/cardview_light_background"
             android:drawablePadding="5dp"
-            android:drawableStart="@drawable/ic_comment"/>
+            android:text="Comment"/>
 
         </LinearLayout>
 
