@@ -84,6 +84,8 @@ public class Homepage extends AppCompatActivity {
         adapter.addFragment(new tab1_fragment(), "Tab1Fragment");
         adapter.addFragment(new tab2_fragment(), "Tab2Fragment");
         adapter.addFragment(new Tab3_fragment(), "Tab3Fragment");
+        adapter.addFragment(new tab4_fragment(), "Tab4Fragment");
+        adapter.addFragment(new tab5_fragment(), "Tab5Fragment");
         viewPager.setAdapter(adapter);
     }
 
