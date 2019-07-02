@@ -6,23 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".tab4_fragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Tab1" />
+        android:layout_height="wrap_content">
+        <!-- TODO: Update blank fragment layout -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/wishlistRecyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-
-
-    <Button
-        android:id="@+id/btnCreateEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </FrameLayout>

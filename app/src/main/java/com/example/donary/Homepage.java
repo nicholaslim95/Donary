@@ -81,11 +81,11 @@ public class Homepage extends AppCompatActivity {
     //adding fragments to SectionPagerAdapter
     private void setupViewPager(ViewPager viewPager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new tab1_fragment(), "Tab1Fragment");
-        adapter.addFragment(new tab2_fragment(), "Tab2Fragment");
-        adapter.addFragment(new Tab3_fragment(), "Tab3Fragment");
-        adapter.addFragment(new tab4_fragment(), "Tab4Fragment");
-        adapter.addFragment(new tab5_fragment(), "Tab5Fragment");
+        adapter.addFragment(new tab1_fragment(), "Event");
+        adapter.addFragment(new tab2_fragment(), "Donate");
+        adapter.addFragment(new Tab3_fragment(), "All");
+        adapter.addFragment(new tab4_fragment(), "Wishlist");
+        adapter.addFragment(new tab5_fragment(), "Profile");
         viewPager.setAdapter(adapter);
     }
 

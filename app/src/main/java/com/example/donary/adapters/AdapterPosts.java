@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.AddDonationActivity;
+import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
@@ -239,7 +240,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         });
     }
 
-    private void showMoreOptions(ImageButton moreBtm, String donater, String myUid, final String donateid, final String pImage) {
+    private void showMoreOptions(ImageButton moreBtm, final String donater, String myUid, final String donateid, final String pImage) {
         //creating popup meny currently having option Delete,
         PopupMenu popupMenu = new PopupMenu(context, moreBtm, Gravity.END);
 
@@ -248,6 +249,9 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             //add item into menu
             popupMenu.getMenu().add(Menu.NONE,0,0, "Delete");
             popupMenu.getMenu().add(Menu.NONE,1,0, "Edit");
+        }
+        else{
+            popupMenu.getMenu().add(Menu.NONE,2,0, "Message");
         }
 
         //item click listener
@@ -265,6 +269,11 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                     Intent intent = new Intent(context, AddDonationActivity.class);
                     intent.putExtra("key","editDonation");
                     intent.putExtra("editDonationId", donateid);
+                    context.startActivity(intent);
+                }
+                else if(id==2){
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("hisUid",donater);
                     context.startActivity(intent);
                 }
                 return false;
