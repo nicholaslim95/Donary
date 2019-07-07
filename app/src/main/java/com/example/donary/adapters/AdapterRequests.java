@@ -137,6 +137,33 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
             }
         });
 
+        myHolder.rejectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
+                        .child(request.getDonateid());
+
+                //owner reject for the requester
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            if (ds.getKey().equals(request.getRequester())){
+                                reference.child(ds.getKey()).child("status").setValue("Rejected");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
+
         isAccept(request.getDonateid(), request.getRequester(), myHolder.acceptBtn, myHolder.rejectBtn);
     }
 
