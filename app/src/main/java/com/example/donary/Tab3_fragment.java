@@ -1,11 +1,9 @@
 package com.example.donary;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,9 +75,7 @@ public class Tab3_fragment extends Fragment {
                 postList.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelPost modelPost =  ds.getValue(ModelPost.class);
-
                     postList.add(modelPost);
-
                     adapterPosts = new AdapterPosts(getActivity(),postList);
                     recyclerView.setAdapter(adapterPosts);
                 }
@@ -92,7 +88,7 @@ public class Tab3_fragment extends Fragment {
         });
     }
 
-    @Override
+/*    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -102,5 +98,10 @@ public class Tab3_fragment extends Fragment {
         fragmentTransaction.detach(currentFragment);
         fragmentTransaction.attach(currentFragment);
         fragmentTransaction.commit();
+    }*/
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

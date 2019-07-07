@@ -97,6 +97,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="15dp"
                 android:hint="90"
+                android:inputType="number"
                 android:id="@+id/etCondition"/>
         </LinearLayout>
 

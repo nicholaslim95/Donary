@@ -8,7 +8,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -87,7 +86,8 @@ public class ViewRequestsActivity extends AppCompatActivity {
 
     private void loadRequests() {
         //load requests from firebase
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Request").child("-Li3-aVwnz9DI5ENUT3K");
+        Intent intent = getIntent();
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Request").child(intent.getStringExtra("donateid"));
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -95,9 +95,7 @@ public class ViewRequestsActivity extends AppCompatActivity {
                 requestList.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelRequest modelRequest =  ds.getValue(ModelRequest.class);
-
                     requestList.add(modelRequest);
-
                     AdapterRequests = new AdapterRequests(ViewRequestsActivity.this,requestList);
                     recyclerView.setAdapter(AdapterRequests);
                 }

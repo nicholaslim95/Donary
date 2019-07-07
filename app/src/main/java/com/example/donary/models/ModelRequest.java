@@ -2,16 +2,26 @@ package com.example.donary.models;
 
 public class ModelRequest {
 
-    String requester, time, reason;
+    String donateid, requester, time, reason, status;
 
     public ModelRequest(){
 
     }
 
-    public ModelRequest(String requester, String time, String reason) {
+    public ModelRequest(String donateid, String requester, String time, String reason, String status) {
+        this.donateid = donateid;
         this.requester = requester;
         this.time = time;
         this.reason = reason;
+        this.status = status;
+    }
+
+    public String getDonateid() {
+        return donateid;
+    }
+
+    public void setDonateid(String donateid) {
+        this.donateid = donateid;
     }
 
     public String getRequester() {
@@ -36,5 +46,13 @@ public class ModelRequest {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

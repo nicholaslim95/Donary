@@ -1,7 +1,7 @@
 package com.example.donary.adapters;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.donary.R;
 import com.example.donary.UserProfile;
-import com.example.donary.ViewRequestsActivity;
 import com.example.donary.models.ModelRequest;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +31,6 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +41,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
     List<ModelRequest> requestList;
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     FirebaseDatabase firebaseDatabase;
+    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
     public AdapterRequests(Context context, List<ModelRequest> requestList) {
@@ -65,6 +64,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         //get data
         String requester = requestList.get(i).getRequester();
         String requestTime = requestList.get(i).getTime();
+        final ModelRequest request = requestList.get(i);
 
         //convert time to dd/mm/yyyy hh:mm am/pm
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -106,17 +106,90 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Request Cancelled", Toast.LENGTH_LONG).show();
+
+                final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
+                        .child(request.getDonateid());
+
+                final DatabaseReference donateRef = FirebaseDatabase.getInstance().getReference("donates");
+
+                //once the user choose the requester, will update the firebase donated item status and also request status.
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            if (ds.getKey().equals(request.getRequester())){
+                                reference.child(ds.getKey()).child("status").setValue("Accepted");
+                            }
+                            else{
+                                reference.child(ds.getKey()).child("status").setValue("Rejected");
+                            }
+                        }
+                        donateRef.child(request.getDonateid()).child("status").setValue("Donated");
+                        Toast.makeText(context,"Donate Successful", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
             }
         });
 
-
+        isAccept(request.getDonateid(), request.getRequester(), myHolder.acceptBtn, myHolder.rejectBtn);
     }
 
 
     @Override
     public int getItemCount() {
         return requestList.size();
+    }
+
+    //Hide btn accept or reject based on the status in Request in firebase
+    private void isAccept(final String donateId, final String requesterid, final Button btnAccept, final Button btnReject){
+
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Request").child(donateId);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.child(requesterid).child("status").getValue().equals("Accepted")){
+                    btnAccept.setText("Accepted");
+                    btnAccept.setTextColor(Color.rgb(50,205,50));
+                    btnAccept.setEnabled(false);
+                    btnAccept.setVisibility(View.VISIBLE);
+                    btnReject.setVisibility(View.GONE);
+                }
+                else if(dataSnapshot.child(requesterid).child("status").getValue().equals("Requesting")){
+                    btnAccept.setText("Accept");
+                    btnReject.setText("Reject");
+                    btnAccept.setTextColor(Color.rgb(0,0,0));
+                    btnReject.setTextColor(Color.rgb(0,0,0));
+                    btnAccept.setEnabled(true);
+                    btnReject.setEnabled(true);
+                    btnAccept.setVisibility(View.VISIBLE);
+                    btnReject.setVisibility(View.VISIBLE);
+                }
+                else {
+                    btnReject.setText("Rejected");
+                    btnReject.setEnabled(false);
+                    btnReject.setTextColor(Color.rgb(255,0,0));
+                    btnAccept.setVisibility(View.GONE);
+                    btnReject.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
     }
 
     //view holder class

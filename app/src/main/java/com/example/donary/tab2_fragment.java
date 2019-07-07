@@ -22,7 +22,6 @@ public class tab2_fragment extends Fragment {
 
         Button btnAdd=(Button) view.findViewById(R.id.btn_add);
         Button btnWishlist=(Button) view.findViewById(R.id.btn_wishlist);
-        Button btnChat=(Button) view.findViewById(R.id.btn_chat);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,13 +39,6 @@ public class tab2_fragment extends Fragment {
             }
         });
 
-        btnChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ChatListFragment.class);
-                startActivity(intent);
-            }
-        });
 
 
         return view;
