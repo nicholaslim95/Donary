@@ -1,4 +1,4 @@
-package com.example.donary;
+package com.example.donary.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.example.donary.AddDonationActivity;
+import com.example.donary.AddWishlistActivity;
+import com.example.donary.R;
 
 
 public class tab2_fragment extends Fragment {

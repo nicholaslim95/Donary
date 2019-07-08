@@ -3,18 +3,21 @@ package com.example.donary;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.example.donary.Fragment.Tab3_fragment;
+import com.example.donary.Fragment.tab1_fragment;
+import com.example.donary.Fragment.tab2_fragment;
+import com.example.donary.Fragment.tab4_fragment;
 
 
 public class Homepage extends AppCompatActivity {
 
+/*
     private static final String TAG = "Homepage";
 
     private SectionsPageAdapter mSectionPageAdapter;
@@ -41,13 +44,26 @@ public class Homepage extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+*/
 
+    //----------------------------------------------
+    BottomNavigationView bottomNavigationView;
+    Fragment selectedFragment = null;
+    //----------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        Log.d(TAG, "onCreate: Starting");
+        //----------------------------------------------
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListerner);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new tab1_fragment()).commit();
+        //----------------------------------------------
+      /*  Log.d(TAG, "onCreate: Starting");
 
         mSectionPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
 
@@ -56,7 +72,7 @@ public class Homepage extends AppCompatActivity {
 
         //Applying custom toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);*/
 
         Bundle intent = getIntent().getExtras();
         if (intent != null){
@@ -67,18 +83,52 @@ public class Homepage extends AppCompatActivity {
 
             //put intent to go to specific user profile activity
             openProfileActivity();
-            /*getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                    ,new Tab3_fragment()).commit();*/
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                    ,new Tab3_fragment()).commit();
         }else {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
                     ,new tab1_fragment()).commit();
         }
-
+/*
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(mViewPager);*/
     }
 
-    //adding fragments to SectionPagerAdapter
+    //----------------------------------------------
+    private  BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListerner =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                    switch (menuItem.getItemId()){
+                        case R.id.nav_home:
+                            selectedFragment = new tab1_fragment();
+                            break;
+                        case R.id.nav_donate:
+                            selectedFragment = new tab2_fragment();
+                            break;
+                        case R.id.nav_wishlist:
+                            selectedFragment = new Tab3_fragment();
+                            break;
+                        case R.id.nav_event:
+                            selectedFragment = new tab4_fragment();
+                            break;
+                        case R.id.nav_profile:
+                            selectedFragment = null;
+                            Intent intent = new Intent(Homepage.this, ProfileActivity.class);
+                            startActivity(intent);
+                            break;
+                    }
+
+                    if(selectedFragment != null){
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                                selectedFragment).commit();
+                    }
+                    return true;
+                }
+            };
+    //----------------------------------------------
+/*    //adding fragments to SectionPagerAdapter
     private void setupViewPager(ViewPager viewPager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new tab1_fragment(), "Event");
@@ -92,7 +142,7 @@ public class Homepage extends AppCompatActivity {
     private void openSettingsActivity() {
         Intent intent = new Intent(this, Settings.class);
         startActivity(intent);
-    }
+    }*/
 
     private void openProfileActivity(){
         Intent intent = new Intent(this, ProfileActivity.class);

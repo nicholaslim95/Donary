@@ -1,4 +1,4 @@
-package com.example.donary;
+package com.example.donary.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,14 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.donary.CreateEvent;
+import com.example.donary.R;
 
 
 public class tab1_fragment extends Fragment {
