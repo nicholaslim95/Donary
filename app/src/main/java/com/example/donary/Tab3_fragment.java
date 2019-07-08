@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.donary.adapters.AdapterPosts;
-import com.example.donary.adapters.CommentAdapter;
 import com.example.donary.models.ModelPost;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,16 +28,12 @@ import java.util.List;
 
 
 public class Tab3_fragment extends Fragment {
-    private static final String TAG = "Tab3Fragment";
 
         FirebaseAuth firebaseAuth;
 
         RecyclerView recyclerView;
         List<ModelPost> postList;
         AdapterPosts adapterPosts;
-        RecyclerView RvComment;
-        CommentAdapter commentAdapter;
-        String donateid;
 
     SwipeRefreshLayout pullToRefresh;
     @Nullable
@@ -49,7 +44,7 @@ public class Tab3_fragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        recyclerView = view.findViewById(R.id.donatesRecyclerview);
+        recyclerView = view.findViewById(R.id.wishlistRecyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);

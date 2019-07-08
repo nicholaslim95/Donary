@@ -2,27 +2,27 @@ package com.example.donary.models;
 
 public class ModelWishlist {
 
-    String donateid, posImage, donater, title, description, time, status; //all postTitle were originally title
+    String wishlistid, posImage, requester, title, description, time, status; //all postTitle were originally title
 
     public ModelWishlist() {
     }
 
-    public ModelWishlist(String donateid, String posImage, String donater, String title, String description, String time, String status) {
-        this.donateid = donateid;
+    public ModelWishlist(String wishlistid, String posImage, String requester, String title, String description, String time, String status) {
+        this.wishlistid = wishlistid;
         this.posImage = posImage;
-        this.donater = donater;
+        this.requester = requester;
         this.title = title;
         this.description = description;
         this.time = time;
         this.status = status;
     }
 
-    public String getDonateid() {
-        return donateid;
+    public String getWishlistid() {
+        return wishlistid;
     }
 
-    public void setDonateid(String donateid) {
-        this.donateid = donateid;
+    public void setWishlistid(String wishlistid) {
+        this.wishlistid = wishlistid;
     }
 
     public String getPosImage() {
@@ -33,12 +33,12 @@ public class ModelWishlist {
         this.posImage = posImage;
     }
 
-    public String getDonater() {
-        return donater;
+    public String getRequester() {
+        return requester;
     }
 
-    public void setDonater(String donater) {
-        this.donater = donater;
+    public void setRequester(String requester) {
+        this.requester = requester;
     }
 
     public String getTitle() {

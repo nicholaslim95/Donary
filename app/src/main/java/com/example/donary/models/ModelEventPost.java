@@ -1,6 +1,8 @@
+package com.example.donary.models;
+
 import java.util.Date;
 
-public class EventPost {
+public class ModelEventPost {
     private String eventId;
     private String eventName;
     private String eventDetail;
@@ -8,12 +10,13 @@ public class EventPost {
     private int noOfParticipants;
     private Date eventStartDate;
     private Date eventEndDate;
+    private String eventPoster;
 
-    public EventPost(){
+    public ModelEventPost(){
 
     }
 
-    public EventPost(String eventId, String eventName, String eventDetail, String eventLocation, int noOfParticipants, Date eventStartDate, Date eventEndDate) {
+    public ModelEventPost(String eventId, String eventName, String eventDetail, String eventLocation, int noOfParticipants, Date eventStartDate, Date eventEndDate, String eventPoster) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventDetail = eventDetail;
@@ -21,6 +24,7 @@ public class EventPost {
         this.noOfParticipants = noOfParticipants;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
+        this.eventPoster = eventPoster;
     }
 
     public String getEventId() {
@@ -77,5 +81,13 @@ public class EventPost {
 
     public void setEventEndDate(Date eventEndDate) {
         this.eventEndDate = eventEndDate;
+    }
+
+    public String getEventPoster() {
+        return eventPoster;
+    }
+
+    public void setEventPoster(String eventPoster) {
+        this.eventPoster = eventPoster;
     }
 }

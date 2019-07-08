@@ -3,6 +3,7 @@ package com.example.donary;
 import java.util.Date;
 
 public class Event {
+    private String eventId;
     private String eventName;
     private String eventDetails;
     private String eventLocation;
@@ -14,7 +15,8 @@ public class Event {
 
     }
 
-    public Event(String eventName, String eventDetails, String eventLocation, Date eventStartDate, Date eventEndDate, int noOfParticipants) {
+    public Event(String eventId, String eventName, String eventDetails, String eventLocation, Date eventStartDate, Date eventEndDate, int noOfParticipants) {
+        this.eventId = eventId;
         this.eventName = eventName;
         this.eventDetails = eventDetails;
         this.eventLocation = eventLocation;
@@ -22,6 +24,10 @@ public class Event {
         this.eventEndDate = eventEndDate;
         this.noOfParticipants = noOfParticipants;
     }
+
+    public String getEventId() { return eventId; }
+
+    public void setEventId(String eventId) { this.eventId = eventId; }
 
     public String getEventName() {
         return eventName;

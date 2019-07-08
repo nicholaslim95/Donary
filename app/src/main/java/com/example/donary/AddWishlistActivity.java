@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -38,7 +38,8 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.HashMap;
 
-public class AddDonationActivity extends AppCompatActivity {
+public class AddWishlistActivity extends AppCompatActivity {
+
     Uri imageUri;
     String myUrl = "";
     StorageTask uploadTask;
@@ -47,12 +48,12 @@ public class AddDonationActivity extends AppCompatActivity {
     FirebaseUser user;
 
     ImageView back, image_added;
-    TextView donate;
-    EditText Title, etDescription, etCondition;
+    TextView request;
+    EditText Title, etReason;
 
 
-    //info of donation post to be edited
-    String editTitle, editDescription, editCondition, editImage;
+    //info of wishlist post to be edited
+    String editTitle, editDescription, editImage;
 
     //check the image view got image or not
     private boolean hasImage(@NonNull ImageView view) {
@@ -69,33 +70,32 @@ public class AddDonationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_donation);
+        setContentView(R.layout.activity_add_wishlist);
 
         back = findViewById(R.id.back);
         image_added = findViewById(R.id.image_added);
-        donate = findViewById(R.id.request);
+        request = findViewById(R.id.request);
         Title = findViewById(R.id.ettitle);
-        etDescription = findViewById(R.id.etReason);
-        etCondition = findViewById(R.id.etCondition);
+        etReason = findViewById(R.id.etReason);
 
-        storageReference = FirebaseStorage.getInstance().getReference("donates");
+        storageReference = FirebaseStorage.getInstance().getReference("Wishlist");
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
 
         //get data through intent from previous activitie's adapter
         Intent intent = getIntent();
         final String isUpdatedKey = ""+intent.getStringExtra("key");
-        final String editDonateId = ""+intent.getStringExtra("editDonationId");
-        //set the donate text to update
-        if(isUpdatedKey.equals("editDonation")){
+        final String editWishlistId = ""+intent.getStringExtra("editWishlistId");
+        //set the wishlist text to update
+        if(isUpdatedKey.equals("editWishlist")){
             //update
-            donate.setText("Update");
-            loadPostData(editDonateId);
+            request.setText("Update");
+            loadPostData(editWishlistId);
         }
         else
         {
             //add
-            donate.setText("Donate");
+            request.setText("Request");
             
         }
 
@@ -103,16 +103,16 @@ public class AddDonationActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+                startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
                 finish();
             }
         });
 
-        donate.setOnClickListener(new View.OnClickListener() {
+        request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isUpdatedKey.equals("editDonation")){
-                    beginUpdate(editTitle, editDescription, editCondition, editDonateId);
+                if(isUpdatedKey.equals("editWishlist")){
+                    beginUpdate(editTitle, editDescription, editWishlistId);
                 }
                 else {
                     uploadImage();
@@ -125,13 +125,13 @@ public class AddDonationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 CropImage.activity()
                 .setAspectRatio(1,1)
-                .start(AddDonationActivity.this);
+                .start(AddWishlistActivity.this);
             }
         });
 
     }
 
-    private void beginUpdate(String editTitle, String editDescription, String editCondition, String editDonateId) {
+    private void beginUpdate(String editTitle, String editDescription, String editWishlistId) {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Updating...");
@@ -139,38 +139,37 @@ public class AddDonationActivity extends AppCompatActivity {
 
         if(!editImage.equals("")){
             //without Image
-            updateWasWithImage(editTitle, editDescription, editDonateId, editCondition);
+            updateWasWithImage(editTitle, editDescription, editWishlistId);
         }else{
             //with Image
 
         }
     }
 
-    private void updateWasWithImage(final String editTitle, final String editDescription, final String editDonateId, final String editCondition) {
+    private void updateWasWithImage(final String editTitle, final String editDescription, final String editWishlistId) {
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
 
-        DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("donates").child(editDonateId).child("posImage");
+        DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("Wishlist").child(editWishlistId).child("posImage");
         //if image no changes
         if(imageUri.equals("")){
 
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
 
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("donateid", editDonateId);
+            hashMap.put("wishlistid", editWishlistId);
             hashMap.put("posImage", editImage);
             hashMap.put("title", Title.getText().toString());
-            hashMap.put("description", etDescription.getText().toString());
-            hashMap.put("condition", etCondition.getText().toString());
-            hashMap.put("donater",   user.getUid());
+            hashMap.put("reason", etReason.getText().toString());
+            hashMap.put("requester",   user.getUid());
             hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
             hashMap.put("status",   "Available");
 
-            reference.child(editDonateId).setValue(hashMap);
+            reference.child(editWishlistId).setValue(hashMap);
 
             progressDialog.dismiss();
 
-            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+            startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
             finish();
         }
         else {
@@ -201,37 +200,36 @@ public class AddDonationActivity extends AppCompatActivity {
                                             Uri downloadUri = task.getResult();
                                             myUrl = downloadUri.toString();
 
-                                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+                                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
 
 
                                             HashMap<String, Object> hashMap = new HashMap<>();
-                                            hashMap.put("donateid", editDonateId);
+                                            hashMap.put("wishlistid", editWishlistId);
                                             hashMap.put("posImage", myUrl);
                                             hashMap.put("title", Title.getText().toString());
-                                            hashMap.put("description", etDescription.getText().toString());
-                                            hashMap.put("condition", etCondition.getText().toString());
-                                            hashMap.put("donater", user.getUid());
+                                            hashMap.put("reason", etReason.getText().toString());
+                                            hashMap.put("requester", user.getUid());
                                             hashMap.put("time", String.valueOf(System.currentTimeMillis()));
-                                            hashMap.put("status", "Available");
+                                            hashMap.put("status", "Requesting");
 
-                                            reference.child(editDonateId).setValue(hashMap);
+                                            reference.child(editWishlistId).setValue(hashMap);
 
                                             progressDialog.dismiss();
 
-                                            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+                                            startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
                                             finish();
                                         } else {
-                                            Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(AddWishlistActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(AddDonationActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AddWishlistActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             } else {
-                                Toast.makeText(AddDonationActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AddWishlistActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             }
 
@@ -241,7 +239,7 @@ public class AddDonationActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
-                            Toast.makeText(AddDonationActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AddWishlistActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
@@ -249,10 +247,10 @@ public class AddDonationActivity extends AppCompatActivity {
 
     }
 
-    private void loadPostData(final String editDonateId) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+    private void loadPostData(final String editWishlistId) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
         //get detail of post using if of post
-        Query fquery = reference.orderByChild("donateid").equalTo(editDonateId);
+        Query fquery = reference.orderByChild("wishlistid").equalTo(editWishlistId);
         fquery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -260,13 +258,11 @@ public class AddDonationActivity extends AppCompatActivity {
                     //get data
                     editTitle = ""+ds.child("title").getValue();
                     editDescription = ""+ds.child("description").getValue();
-                    editCondition = ""+ds.child("condition").getValue();
                     editImage = ""+ds.child("posImage").getValue();
 
                     //set data to views
                     Title.setText(editTitle);
-                    etDescription.setText(editDescription);
-                    etCondition.setText(editCondition);
+                    etReason.setText(editDescription);
 
                     //set image
                     if(!editImage.equals("")){
@@ -318,38 +314,37 @@ public class AddDonationActivity extends AppCompatActivity {
                         Uri downloadUri = task.getResult();
                         myUrl = downloadUri.toString();
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
 
-                        String donateid = reference.push().getKey();
+                        String wishlistid = reference.push().getKey();
 
                         HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("donateid", donateid);
+                        hashMap.put("wishlistid", wishlistid);
                         hashMap.put("posImage", myUrl);
                         hashMap.put("title", Title.getText().toString());
-                        hashMap.put("description", etDescription.getText().toString());
-                        hashMap.put("condition", etCondition.getText().toString());
-                        hashMap.put("donater",   user.getUid());
+                        hashMap.put("reason", etReason.getText().toString());
+                        hashMap.put("requester",   user.getUid());
                         hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
                         hashMap.put("status",   "Available");
 
-                        reference.child(donateid).setValue(hashMap);
+                        reference.child(wishlistid).setValue(hashMap);
 
                         progressDialog.dismiss();
 
-                        startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+                        startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
                         finish();
                     }else{
-                        Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddWishlistActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AddDonationActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddWishlistActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
-            Toast.makeText(AddDonationActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddWishlistActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
     }
@@ -368,7 +363,7 @@ public class AddDonationActivity extends AppCompatActivity {
         else
         {
             Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+            startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
             finish();
         }
     }

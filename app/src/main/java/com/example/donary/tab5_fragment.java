@@ -1,6 +1,5 @@
 package com.example.donary;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,17 +18,8 @@ public class tab5_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab1_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_tab5_fragment, container, false);
 
-        btnCreateEvent = (Button) view.findViewById(R.id.btnCreateEvent);
-
-        btnCreateEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateEvent.class);
-                startActivity(intent);
-            }
-        });
         return view;
     }
 

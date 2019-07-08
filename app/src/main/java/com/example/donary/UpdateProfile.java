@@ -105,7 +105,7 @@ public class UpdateProfile extends AppCompatActivity {
                 String name = newUsername.getText().toString();
                 String email = newUserEmail.getText().toString();
 
-                UserProfile userProfile = new UserProfile(email, name);
+                UserProfile userProfile = new UserProfile(email, name,  firebaseAuth.getUid());
 
                 databaseReference.setValue(userProfile);
 

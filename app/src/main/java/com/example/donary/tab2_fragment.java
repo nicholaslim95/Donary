@@ -20,15 +20,34 @@ public class tab2_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab2_fragment, container, false);
 
-        Button btnNext=(Button) view.findViewById(R.id.btn_my);
+        Button btnAdd=(Button) view.findViewById(R.id.btn_add);
+        Button btnWishlist=(Button) view.findViewById(R.id.btn_wishlist);
+        Button btnChat=(Button) view.findViewById(R.id.btn_chat);
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
+        btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddDonationActivity.class);
                 startActivity(intent);
             }
         });
+
+        btnWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddWishlistActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChatListFragment.class);
+                startActivity(intent);
+            }
+        });
+
 
         return view;
     }
