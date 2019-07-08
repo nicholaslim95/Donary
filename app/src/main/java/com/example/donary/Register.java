@@ -165,7 +165,7 @@ public class Register extends AppCompatActivity {
                 Toast.makeText(Register.this, "Upload successful", Toast.LENGTH_SHORT).show();
             }
         });
-        UserProfile userProfile = new UserProfile(email, username);
+        UserProfile userProfile = new UserProfile(email, username, firebaseAuth.getUid());
         myRef.setValue(userProfile);
     }
 }

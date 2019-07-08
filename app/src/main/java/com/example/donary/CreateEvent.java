@@ -5,16 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.donary.models.ModelEventPost;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -24,16 +22,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CreateEvent extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -72,10 +64,14 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
                 eventLocation = locationInformation;
 
                 noOfParticipants = Integer.parseInt(txtNoOfParticipants.getText().toString());
-                Event newEvent = new Event(eventName,eventDetails, eventLocation, startDate, endDate, noOfParticipants);
+
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = firebaseDatabase.getReference("Event").child(firebaseAuth.getUid());
-                myRef.push().setValue(newEvent); //.push used to generate unique id when post
+                DatabaseReference myRef = firebaseDatabase.getReference("Event");
+
+                String eventId = myRef.push().getKey();
+                //Event newEvent = new Event(eventId, eventName,eventDetails, eventLocation, startDate, endDate, noOfParticipants);
+                ModelEventPost newEvent = new ModelEventPost(eventId, eventName,eventDetails, eventLocation, noOfParticipants ,startDate, endDate, firebaseAuth.getUid());
+                myRef.child(eventId).setValue(newEvent); //.push used to generate unique id when post
 
                 Toast.makeText(CreateEvent.this, "Event successfully created.", Toast.LENGTH_SHORT).show();
             }
@@ -140,7 +136,7 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            startDate = new Date(year, (month + 1), dayOfMonth);
+            startDate = new Date(year, month, dayOfMonth);
             System.out.println("year of startDate: " + startDate.getYear());
             System.out.println("month of startDate: " + startDate.getMonth());
             System.out.println("day of startDate: " + startDate.getDate());
@@ -152,7 +148,7 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            endDate = new Date(year, (month + 1), dayOfMonth);
+            endDate = new Date(year, month, dayOfMonth);
 
             System.out.println("year of endDate: " + endDate.getYear());
             System.out.println("month of endDate: " + endDate.getMonth());
