@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ViewRequestsActivity">
+    tools:context=".FullScreenImageActivity"
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -31,14 +31,6 @@
                     android:src="@drawable/ic_back"
                     android:id="@+id/back"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Requester List"
-                    android:id="@+id/requesterList"
-                    android:textSize="16sp"
-                    android:layout_marginLeft="20dp" />
-
             </LinearLayout>
 
 
@@ -46,14 +38,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/pullToRefresh"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- TODO: Update blank fragment layout -->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/requestRecyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent"
+        android:id="@+id/fullScreenIv"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
 </LinearLayout>

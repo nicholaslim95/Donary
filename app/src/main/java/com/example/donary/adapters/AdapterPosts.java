@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.donary.AddDonationActivity;
 import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
+import com.example.donary.FullScreenImageActivity;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
@@ -122,9 +123,15 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         });
 
         //set the post data
-        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) "+pStatus);
+        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) - "+pStatus);
         myHolder.pDescriptionTv.setText(pdescription);
         myHolder.pTimeTv.setText(sTime);
+        if(pStatus.equals("Donated")){
+            myHolder.requestBtn.setVisibility(View.GONE);
+        }
+        else {
+            myHolder.requestBtn.setVisibility(View.VISIBLE);
+        }
 
         try {
             Picasso.get().load(pImage).into(myHolder.pImageIv);
@@ -136,6 +143,15 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             @Override
             public void onClick(View v) {
                 showMoreOptions(myHolder.moreBtm, donater, myUid, donateid, pImage);
+            }
+        });
+
+        myHolder.pImageIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent fullScreenIntent = new Intent(context, FullScreenImageActivity.class);
+                fullScreenIntent.setData(Uri.parse(pImage));
+                context.startActivity(fullScreenIntent);
             }
         });
 
@@ -158,6 +174,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                     }
                     else{
                         Intent intent = new Intent(context, ViewRequestsActivity.class);
+                        intent.putExtra("donateid", post.getDonateid());
                         context.startActivity(intent);
                     }
 
@@ -175,6 +192,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                                         .child(post.getDonateid()).child(firebaseUser.getUid());
 
                                 HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("donateid", post.getDonateid());
                                 hashMap.put("requester", firebaseUser.getUid());
                                 hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
                                 hashMap.put("reason", "Reason: " + reason.getText().toString());
@@ -416,8 +434,8 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         //views from row_post.xml
         ImageView pImageIv, uPicturerIv ;
         TextView pTitleTv, pInterestTv, pCommentTv, uNameTv, pDescriptionTv, pTimeTv;
-        ImageButton moreBtm;
-        Button requestBtn, commentBtn;
+        ImageButton moreBtm, commentBtn;
+        Button requestBtn;
         LinearLayout profileLayout;
 
         public MyHolder(@NonNull View itemView){

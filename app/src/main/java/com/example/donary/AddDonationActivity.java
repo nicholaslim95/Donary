@@ -298,60 +298,69 @@ public class AddDonationActivity extends AppCompatActivity {
         progressDialog.setMessage("Posting");
         progressDialog.show();
 
-        if(imageUri != null){
-            final StorageReference filereference = storageReference.child(System.currentTimeMillis()
-                    + "." +getFileExtension(imageUri));
-
-            uploadTask = filereference.putFile(imageUri);
-            uploadTask.continueWithTask(new Continuation() {
-                @Override
-                public Object then(@NonNull Task task) throws Exception {
-                    if(!task.isComplete()){
-                        throw task.getException();
-                    }
-                    return  filereference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if(task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        myUrl = downloadUri.toString();
-
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
-
-                        String donateid = reference.push().getKey();
-
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("donateid", donateid);
-                        hashMap.put("posImage", myUrl);
-                        hashMap.put("title", Title.getText().toString());
-                        hashMap.put("description", etDescription.getText().toString());
-                        hashMap.put("condition", etCondition.getText().toString());
-                        hashMap.put("donater",   user.getUid());
-                        hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
-                        hashMap.put("status",   "Available");
-
-                        reference.child(donateid).setValue(hashMap);
-
-                        progressDialog.dismiss();
-
-                        startActivity(new Intent(AddDonationActivity.this, Homepage.class));
-                        finish();
-                    }else{
-                        Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AddDonationActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }else{
+        if(imageUri == null) {
             Toast.makeText(AddDonationActivity.this, "Image Required!", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
+        else if(Title.getText().toString().equals("")){
+            Toast.makeText(AddDonationActivity.this, "Title cannot empty", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }else if(etCondition.getText().toString().equals("")){
+            Toast.makeText(AddDonationActivity.this, "Condition cannot empty", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }else {
+                final StorageReference filereference = storageReference.child(System.currentTimeMillis()
+                        + "." +getFileExtension(imageUri));
+
+                uploadTask = filereference.putFile(imageUri);
+                uploadTask.continueWithTask(new Continuation() {
+                    @Override
+                    public Object then(@NonNull Task task) throws Exception {
+                        if(!task.isComplete()){
+                            throw task.getException();
+                        }
+                        return  filereference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if(task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            myUrl = downloadUri.toString();
+
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
+
+
+                                String donateid = reference.push().getKey();
+
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("donateid", donateid);
+                                hashMap.put("posImage", myUrl);
+                                hashMap.put("title", Title.getText().toString());
+                                hashMap.put("description", etDescription.getText().toString());
+                                hashMap.put("condition", etCondition.getText().toString());
+                                hashMap.put("donater",   user.getUid());
+                                hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+                                hashMap.put("status",   "Available");
+
+                                reference.child(donateid).setValue(hashMap);
+
+                                progressDialog.dismiss();
+
+                                startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+                                finish();
+
+                        }else{
+                            Toast.makeText(AddDonationActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(AddDonationActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
     }
 
     //ctrl + o
