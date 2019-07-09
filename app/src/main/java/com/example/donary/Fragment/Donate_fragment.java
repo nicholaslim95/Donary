@@ -41,7 +41,7 @@ public class Donate_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab3_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_donate, container, false);
 
 
         firebaseAuth = FirebaseAuth.getInstance();
