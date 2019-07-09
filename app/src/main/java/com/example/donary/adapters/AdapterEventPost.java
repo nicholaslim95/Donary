@@ -57,7 +57,9 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
 
         final Date eventStartDate = mPost.get(i).getEventStartDate();
+        eventStartDate.setYear(eventStartDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
         final Date eventEndDate = mPost.get(i).getEventEndDate();
+        eventEndDate.setYear(eventEndDate.getYear() - 1900);
         //final String startDate = dateFormat.format(eventStartDate);
         //final String endDate = dateFormat.format(eventEndDate);
         final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
