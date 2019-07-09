@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
+public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
     Context context;
     List<ModelPost> postList;
@@ -123,15 +123,9 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         });
 
         //set the post data
-        myHolder.pTitleTv.setText(ptitle +  " - (" + pCondition+  "% new) - "+pStatus);
+        myHolder.pTitleTv.setText(ptitle + " - (" + pCondition + "% new) - " + pStatus);
         myHolder.pDescriptionTv.setText(pdescription);
         myHolder.pTimeTv.setText(sTime);
-        if(pStatus.equals("Donated")){
-            myHolder.requestBtn.setVisibility(View.GONE);
-        }
-        else {
-            myHolder.requestBtn.setVisibility(View.VISIBLE);
-        }
 
         try {
             Picasso.get().load(pImage).into(myHolder.pImageIv);
@@ -162,25 +156,23 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
                 final Dialog requestDialog = new Dialog(context);
                 requestDialog.setContentView(R.layout.request_reson_dialog);
-                final EditText reason = (EditText)requestDialog.findViewById(R.id.requestreason);
-                Button saveReason = (Button)requestDialog.findViewById(R.id.save);
+                final EditText reason = (EditText) requestDialog.findViewById(R.id.requestreason);
+                Button saveReason = (Button) requestDialog.findViewById(R.id.save);
 
                 //Owner of the donation post will got to the user request page for that donation item.
-                if(post.getDonater().equals(firebaseUser.getUid())){
+                if (post.getDonater().equals(firebaseUser.getUid())) {
 
                     //check whether got requester for that donation
-                    if(myHolder.requestBtn.getText().equals("No Requests")){
-                        Toast.makeText(context,"Don't have Requester", Toast.LENGTH_LONG).show();
-                    }
-                    else{
+                    if (myHolder.requestBtn.getText().equals("No Requests")) {
+                        Toast.makeText(context, "Don't have Requester", Toast.LENGTH_LONG).show();
+                    } else {
                         Intent intent = new Intent(context, ViewRequestsActivity.class);
                         intent.putExtra("donateid", post.getDonateid());
                         context.startActivity(intent);
                     }
 
-                }
-                else{
-                    if (myHolder.requestBtn.getText().equals("Request")){
+                } else {
+                    if (myHolder.requestBtn.getText().equals("Request")) {
 
                         reason.setEnabled(true);
                         saveReason.setEnabled(true);
@@ -194,19 +186,19 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                                 HashMap<String, Object> hashMap = new HashMap<>();
                                 hashMap.put("donateid", post.getDonateid());
                                 hashMap.put("requester", firebaseUser.getUid());
-                                hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
+                                hashMap.put("time", String.valueOf(System.currentTimeMillis()));
                                 hashMap.put("reason", "Reason: " + reason.getText().toString());
-                                hashMap.put("status",   "Requesting");
+                                hashMap.put("status", "Requesting");
 
                                 reference.setValue(hashMap);
                                 requestDialog.cancel();
-                                Toast.makeText(context,"Requested", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Requested", Toast.LENGTH_LONG).show();
                             }
                         });
-                    }else{
+                    } else {
                         FirebaseDatabase.getInstance().getReference().child("Request")
                                 .child(post.getDonateid()).child(firebaseUser.getUid()).removeValue();
-                        Toast.makeText(context,"Request Cancelled", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, "Request Cancelled", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -232,7 +224,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             @Override
             public void onClick(View v) {
                 /*click to go to Profile Activity with uid, this uid is of clicked user
-                * which will be used to show user specific data/posts*/
+                 * which will be used to show user specific data/posts*/
                 Intent intent = new Intent(context, ProfileActivity.class);
                 intent.putExtra("donater", donater);
                 context.startActivity(intent);
@@ -242,13 +234,17 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
 
     }
 
-    private void getComments(String donateid, final TextView comments){
+    private void getComments(String donateid, final TextView comments) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Comments").child(donateid);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                comments.setText(dataSnapshot.getChildrenCount() + "Comments");
+                if (dataSnapshot.getChildrenCount() < 1) {
+                    comments.setText("0 comment");
+                } else {
+                    comments.setText(dataSnapshot.getChildrenCount() + " comments");
+                }
             }
 
             @Override
@@ -263,13 +259,12 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         PopupMenu popupMenu = new PopupMenu(context, moreBtm, Gravity.END);
 
         //show delete option in only post(s) of currently signed-in user
-        if(donater.equals(myUid)){
+        if (donater.equals(myUid)) {
             //add item into menu
-            popupMenu.getMenu().add(Menu.NONE,0,0, "Delete");
-            popupMenu.getMenu().add(Menu.NONE,1,0, "Edit");
-        }
-        else{
-            popupMenu.getMenu().add(Menu.NONE,2,0, "Message");
+            popupMenu.getMenu().add(Menu.NONE, 0, 0, "Delete");
+            popupMenu.getMenu().add(Menu.NONE, 1, 0, "Edit");
+        } else {
+            popupMenu.getMenu().add(Menu.NONE, 2, 0, "Message");
         }
 
         //item click listener
@@ -277,21 +272,19 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 int id = menuItem.getItemId();
-                if(id==0){
+                if (id == 0) {
                     //delete is clicked
                     beginDelete(donateid, pImage);
-                }
-                else if(id==1){
+                } else if (id == 1) {
                     //Edit is clicked
                     //start AddDonationActivity with key "editPost" and the id of the post clicked
                     Intent intent = new Intent(context, AddDonationActivity.class);
-                    intent.putExtra("key","editDonation");
+                    intent.putExtra("key", "editDonation");
                     intent.putExtra("editDonationId", donateid);
                     context.startActivity(intent);
-                }
-                else if(id==2){
+                } else if (id == 2) {
                     Intent intent = new Intent(context, ChatActivity.class);
-                    intent.putExtra("hisUid",donater);
+                    intent.putExtra("hisUid", donater);
                     context.startActivity(intent);
                 }
                 return false;
@@ -346,13 +339,13 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                     public void onFailure(@NonNull Exception e) {
                         //failure for delete and show error
                         pd.dismiss();
-                        Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     //check personal whether got requests for particular post
-    private void isRequest(String donateId, final Button button){
+    private void isRequest(String donateId, final Button button) {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
@@ -362,6 +355,9 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
         final DatabaseReference donateref = FirebaseDatabase.getInstance().getReference()
                 .child("donates").child(donateId).child("donater");
 
+        final DatabaseReference donatedref = FirebaseDatabase.getInstance().getReference()
+                .child("donates").child(donateId).child("status");
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot1) {
@@ -369,14 +365,44 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                 //changes the post request button to "View Requests" button for owner
                 donateref.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
-                        if(dataSnapshot2.getValue().equals(firebaseUser.getUid())){
-                            if(dataSnapshot1.getChildrenCount() >= 1){
-                                button.setText("View Requests");
-                            }else {
-                                button.setText("No Requests");
+                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot2) {
+
+                        donatedref.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
+
+                                //check whether the donate item still available
+                                if (dataSnapshot3.getValue().equals("Available")) {
+                                    if (dataSnapshot2.getValue().equals(firebaseUser.getUid())) {
+                                        if (dataSnapshot1.getChildrenCount() >= 1) {
+                                            button.setText("View Requests");
+                                        } else {
+                                            button.setText("No Requests");
+                                        }
+                                    } else {
+                                        //if not owner for that post
+                                        if (dataSnapshot1.child(firebaseUser.getUid()).exists()) {
+                                            button.setText("Requested");
+                                            button.setBackgroundColor(Color.rgb(255, 222, 173));
+                                            button.setEnabled(true);
+                                        } else {
+                                            button.setText("Request");
+                                            button.setBackgroundColor(Color.rgb(255, 255, 255));
+                                        }
+                                    }
+                                } else {
+                                    button.setText("Donated");
+                                    button.setTextColor(Color.rgb(255, 255, 255));
+                                    button.setBackgroundColor(Color.rgb(255, 0, 0));
+                                    button.setEnabled(false);
+                                }
                             }
-                        }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
 
                     @Override
@@ -385,15 +411,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
                     }
                 });
 
-                //if not owner for that post
-                if(dataSnapshot1.child(firebaseUser.getUid()).exists()){
-                    button.setText("Requested");
-                    button.setBackgroundColor(Color.rgb(255,222,173));
-                }
-                else{
-                    button.setText("Request");
-                    button.setBackgroundColor(Color.rgb(255,255,255));
-                }
             }
 
             @Override
@@ -406,13 +423,17 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     }
 
     //COUNT NUMBER OF REQUEST FOR A DONATION POST
-    private void nrRequests(final TextView requests, String donateId){
+    private void nrRequests(final TextView requests, String donateId) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Request")
                 .child(donateId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                requests.setText(dataSnapshot.getChildrenCount()+ " requests");
+                if (dataSnapshot.getChildrenCount() < 1) {
+                    requests.setText("0 request");
+                } else {
+                    requests.setText(dataSnapshot.getChildrenCount() + " requests");
+                }
             }
 
             @Override
@@ -429,16 +450,16 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder>{
     }
 
     //view holder class
-    class MyHolder extends RecyclerView.ViewHolder{
+    class MyHolder extends RecyclerView.ViewHolder {
 
         //views from row_post.xml
-        ImageView pImageIv, uPicturerIv ;
+        ImageView pImageIv, uPicturerIv;
         TextView pTitleTv, pInterestTv, pCommentTv, uNameTv, pDescriptionTv, pTimeTv;
         ImageButton moreBtm, commentBtn;
         Button requestBtn;
         LinearLayout profileLayout;
 
-        public MyHolder(@NonNull View itemView){
+        public MyHolder(@NonNull View itemView) {
             super(itemView);
 
             //init views

@@ -167,7 +167,11 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                comments.setText(dataSnapshot.getChildrenCount() + "Comments");
+                if(dataSnapshot.getChildrenCount() < 1){
+                    comments.setText("0 comment");
+                }else {
+                    comments.setText(dataSnapshot.getChildrenCount() + " comments");
+                }
             }
 
             @Override
