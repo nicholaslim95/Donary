@@ -15,7 +15,7 @@ import com.example.donary.AddWishlistActivity;
 import com.example.donary.R;
 
 
-public class tab2_fragment extends Fragment {
+public class Message_fragment extends Fragment {
     private static final String TAG = "Tab2Fragment";
 
 

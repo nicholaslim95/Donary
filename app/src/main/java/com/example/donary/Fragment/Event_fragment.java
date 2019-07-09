@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class tab1_fragment extends Fragment {
+public class Event_fragment extends Fragment {
     private static final String TAG = "Tab1Fragment";
 
     private RecyclerView recyclerView;

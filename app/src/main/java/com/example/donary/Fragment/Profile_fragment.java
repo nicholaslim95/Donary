@@ -12,7 +12,7 @@ import android.widget.Button;
 import com.example.donary.R;
 
 
-public class tab5_fragment extends Fragment {
+public class Profile_fragment extends Fragment {
     private static final String TAG = "Tab4Fragment";
 
     Button btnCreateEvent;

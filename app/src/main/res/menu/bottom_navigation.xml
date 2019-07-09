@@ -4,26 +4,26 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title=""/>
-
-    <item
-        android:id="@+id/nav_donate"
-        android:icon="@drawable/ic_donate"
-        android:title=""/>
+        android:title="Donation"/>
 
     <item
         android:id="@+id/nav_wishlist"
         android:icon="@drawable/ic_wishlist"
-        android:title=""/>
+        android:title="Wishlist"/>
 
     <item
         android:id="@+id/nav_event"
         android:icon="@drawable/ic_event"
-        android:title=""/>
+        android:title="Event"/>
+
+    <item
+        android:id="@+id/nav_message"
+        android:icon="@drawable/ic_message"
+        android:title="Message"/>
 
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_profile"
-        android:title=""/>
+        android:title="Profile"/>
 
 </menu>
