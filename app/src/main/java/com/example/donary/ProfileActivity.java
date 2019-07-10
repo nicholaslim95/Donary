@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.auth.api.signin.internal.Storage;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,8 +29,8 @@ import org.w3c.dom.Text;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView txt_name, txt_email;
-    private Button btn_update_profile_info;
+    /*private TextView txt_name, txt_email;
+    private Button btn_update_profile_info, btnLogout;
     private ImageView img_profilePicture;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -43,13 +44,26 @@ public class ProfileActivity extends AppCompatActivity {
         txt_name = (TextView) findViewById(R.id.txtProfileName);
         txt_email = (TextView) findViewById(R.id.txtProfileEmail);
         btn_update_profile_info = (Button) findViewById(R.id.btnUpdateProfileInfo);
-
+        btnLogout = (Button) findViewById(R.id.testBtnLogout);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
         final DatabaseReference databaseReference = firebaseDatabase.getReference("Users").child(firebaseAuth.getUid());
         StorageReference storageReference = firebaseStorage.getReference();
+
+
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Logout
+                FirebaseAuth.getInstance().signOut();
+                //Just a test, or else look back on login manager
+                LoginManager.getInstance().logOut();
+                openMainActivity();
+            }
+        });
 
         storageReference.child("Users").child(firebaseAuth.getUid()).child("Profile pic").child(firebaseAuth.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -80,4 +94,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void openMainActivity() {
+        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+        startActivity(intent);
+    }*/
 }

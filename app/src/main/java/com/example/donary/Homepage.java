@@ -13,6 +13,7 @@ import com.example.donary.Fragment.Tab3_fragment;
 import com.example.donary.Fragment.tab1_fragment;
 import com.example.donary.Fragment.tab2_fragment;
 import com.example.donary.Fragment.tab4_fragment;
+import com.example.donary.Fragment.tab5_fragment;
 
 
 public class Homepage extends AppCompatActivity {
@@ -114,9 +115,9 @@ public class Homepage extends AppCompatActivity {
                             selectedFragment = new tab4_fragment();
                             break;
                         case R.id.nav_profile:
-                            selectedFragment = null;
-                            Intent intent = new Intent(Homepage.this, ProfileActivity.class);
-                            startActivity(intent);
+                            selectedFragment = new tab5_fragment();
+                            //Intent intent = new Intent(Homepage.this, ProfileActivity.class);
+                            //startActivity(intent);
                             break;
                     }
 
