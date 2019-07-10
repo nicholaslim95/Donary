@@ -1,5 +1,6 @@
 package com.example.donary.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,8 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.donary.AddDonationActivity;
 import com.example.donary.R;
 import com.example.donary.adapters.AdapterPosts;
 import com.example.donary.models.ModelPost;
@@ -26,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Tab3_fragment extends Fragment {
+public class Donate_fragment extends Fragment {
 
         FirebaseAuth firebaseAuth;
 
@@ -38,7 +41,7 @@ public class Tab3_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab3_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_donate, container, false);
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -62,6 +65,14 @@ public class Tab3_fragment extends Fragment {
         });
         loadPosts();
 
+        Button btnAdd = view.findViewById(R.id.btnAddDonation);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AddDonationActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -94,7 +105,7 @@ public class Tab3_fragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Reload current fragment avoid delete crashed
-        Fragment currentFragment = getFragmentManager().findFragmentByTag("Tab3_fragment");
+        Fragment currentFragment = getFragmentManager().findFragmentByTag("Donate_fragment");
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.detach(currentFragment);
         fragmentTransaction.attach(currentFragment);

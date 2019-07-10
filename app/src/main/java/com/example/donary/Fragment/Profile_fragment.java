@@ -33,7 +33,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 
-public class tab5_fragment extends Fragment {
+public class Profile_fragment extends Fragment {
     private static final String TAG = "Tab4Fragment";
 
     Button btnCreateEvent;
@@ -48,8 +48,9 @@ public class tab5_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab5_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        //Profile_fragment profile_fragment = getFragmentManager().findFragmentById(R.layout.fragment_profile);
         super.onCreate(savedInstanceState);
 
         img_profilePicture = (ImageView) view.findViewById(R.id.imgProfilePicture);
@@ -87,9 +88,10 @@ public class tab5_fragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                String name = userProfile.getUserName();
                 System.out.println("datasnapshotb stuff" + dataSnapshot.getValue(UserProfile.class));
                 System.out.println("userProfileActivity" + userProfile.getUserName());
-                txt_name.setText(userProfile.getUserName());
+                txt_name.setText(name);
                 txt_email.setText(userProfile.getUserEmail());
             }
 
@@ -116,7 +118,7 @@ public class tab5_fragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Fragment currentFragment = getFragmentManager().findFragmentByTag("tab5_fragment");
+        Fragment currentFragment = getFragmentManager().findFragmentByTag("Profile_fragment");
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.detach(currentFragment);
         fragmentTransaction.attach(currentFragment);

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class tab1_fragment extends Fragment {
+public class Event_fragment extends Fragment {
     private static final String TAG = "Tab1Fragment";
 
     private RecyclerView recyclerView;
@@ -44,7 +44,7 @@ public class tab1_fragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tab1_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_event, container, false);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 

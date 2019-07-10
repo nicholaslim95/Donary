@@ -9,11 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.example.donary.Fragment.Tab3_fragment;
-import com.example.donary.Fragment.tab1_fragment;
-import com.example.donary.Fragment.tab2_fragment;
-import com.example.donary.Fragment.tab4_fragment;
-import com.example.donary.Fragment.tab5_fragment;
+import com.example.donary.Fragment.Event_fragment;
+import com.example.donary.Fragment.Donate_fragment;
+import com.example.donary.Fragment.Message_fragment;
+import com.example.donary.Fragment.Profile_fragment;
+import com.example.donary.Fragment.Wishlist_fragment;
 
 
 public class Homepage extends AppCompatActivity {
@@ -62,7 +62,7 @@ public class Homepage extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListerner);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new tab1_fragment()).commit();
+                new Donate_fragment()).commit();
         //----------------------------------------------
       /*  Log.d(TAG, "onCreate: Starting");
 
@@ -85,10 +85,10 @@ public class Homepage extends AppCompatActivity {
             //put intent to go to specific user profile activity
             openProfileActivity();
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                    ,new Tab3_fragment()).commit();
+                    ,new Donate_fragment()).commit();
         }else {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                    ,new tab1_fragment()).commit();
+                    ,new Donate_fragment()).commit();
         }
 /*
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -103,21 +103,19 @@ public class Homepage extends AppCompatActivity {
 
                     switch (menuItem.getItemId()){
                         case R.id.nav_home:
-                            selectedFragment = new tab1_fragment();
+                            selectedFragment = new Donate_fragment();
                             break;
-                        case R.id.nav_donate:
-                            selectedFragment = new tab2_fragment();
+                        case R.id.nav_message:
+                            selectedFragment = new Message_fragment();
                             break;
                         case R.id.nav_wishlist:
-                            selectedFragment = new Tab3_fragment();
+                            selectedFragment = new Wishlist_fragment();
                             break;
                         case R.id.nav_event:
-                            selectedFragment = new tab4_fragment();
+                            selectedFragment = new Event_fragment();
                             break;
                         case R.id.nav_profile:
-                            selectedFragment = new tab5_fragment();
-                            //Intent intent = new Intent(Homepage.this, ProfileActivity.class);
-                            //startActivity(intent);
+                            selectedFragment = new Profile_fragment();
                             break;
                     }
 
@@ -132,11 +130,11 @@ public class Homepage extends AppCompatActivity {
 /*    //adding fragments to SectionPagerAdapter
     private void setupViewPager(ViewPager viewPager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new tab1_fragment(), "Event");
-        adapter.addFragment(new tab2_fragment(), "Donate");
-        adapter.addFragment(new Tab3_fragment(), "All");
-        adapter.addFragment(new tab4_fragment(), "Wishlist");
-        adapter.addFragment(new tab5_fragment(), "Profile");
+        adapter.addFragment(new Event_fragment(), "Event");
+        adapter.addFragment(new Message_fragment(), "Donate");
+        adapter.addFragment(new Donate_fragment(), "All");
+        adapter.addFragment(new Wishlist_fragment(), "Wishlist");
+        adapter.addFragment(new Profile_fragment(), "Profile");
         viewPager.setAdapter(adapter);
     }
 

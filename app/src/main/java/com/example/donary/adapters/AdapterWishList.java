@@ -21,7 +21,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.donary.AddWishlistActivity;
+import com.example.donary.AddDonationActivity;
+import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
@@ -166,7 +167,11 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                comments.setText(dataSnapshot.getChildrenCount() + "Comments");
+                if(dataSnapshot.getChildrenCount() < 1){
+                    comments.setText("0 comment");
+                }else {
+                    comments.setText(dataSnapshot.getChildrenCount() + " comments");
+                }
             }
 
             @Override
@@ -176,7 +181,7 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
         });
     }
 
-    private void showMoreOptions(ImageButton moreBtm, String requester, String myUid, final String wishlistId, final String pImage) {
+    private void showMoreOptions(ImageButton moreBtm, final String requester, String myUid, final String wishlistId, final String pImage) {
         //creating popup meny currently having option Delete,
         PopupMenu popupMenu = new PopupMenu(context, moreBtm, Gravity.END);
 
@@ -185,6 +190,8 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
             //add item into menu
             popupMenu.getMenu().add(Menu.NONE,0,0, "Delete");
             popupMenu.getMenu().add(Menu.NONE,1,0, "Edit");
+        }else{
+            popupMenu.getMenu().add(Menu.NONE,2,0, "Message");
         }
 
         //item click listener
@@ -198,10 +205,15 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
                 }
                 else if(id==1){
                     //Edit is clicked
-                    //start AddWishlistActivity with key "editPost" and the id of the post clicked
-                    Intent intent = new Intent(context, AddWishlistActivity.class);
-                    intent.putExtra("key","editWishlist");
-                    intent.putExtra("editWishlistId", wishlistId);
+                    //start AddDonationActivity with key "editPost" and the id of the post clicked
+                    Intent intent = new Intent(context, AddDonationActivity.class);
+                    intent.putExtra("key","editDonation");
+                    intent.putExtra("editDonationId", wishlistId);
+                    context.startActivity(intent);
+                }
+                else if(id==2){
+                    Intent intent = new Intent(context, ChatActivity.class);
+                    intent.putExtra("hisUid",requester);
                     context.startActivity(intent);
                 }
                 return false;
