@@ -1,11 +1,13 @@
 package com.example.donary.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -14,6 +16,7 @@ import com.example.donary.EventPost;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelEventPost;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +24,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,7 +39,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     public List<ModelEventPost> mPost;
 
     private FirebaseUser firebaseUser;
-
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     public AdapterEventPost(Context mContext, List<ModelEventPost> mPost) {
         this.mContext = mContext;
         this.mPost = mPost;
@@ -48,6 +54,8 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+
+        //This is where we ge data and assign to viewholder
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         ModelEventPost modelEventPost = mPost.get(i);
 
@@ -64,6 +72,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         //final String endDate = dateFormat.format(eventEndDate);
         final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
         final String endDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventEndDate);
+        final String userID = mPost.get(i).getEventPoster();
 /*
         if(modelEventPost.getEventName().equals("")){
             //use this to hide if there is no event name (but that's impossible, unless like a no image then hide)
@@ -78,7 +87,31 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 */
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Event");
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
+        //To apply user's profile picture to event post
+        StorageReference storageReference = firebaseStorage.getReference();
+        storageReference.child("Users").child(userID).child("Profile pic").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).placeholder(R.drawable.ic_default_img).into(viewHolder.eventPosterProfilePic);
+            }
+        });
+
+        userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                viewHolder.userName.setText(userProfile.getUserName());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //To apply event details to event post
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -90,6 +123,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 viewHolder.eventDescription.setText(eventDescription);
                 viewHolder.eventStartDate.setText("The event will start at: "+ startDate);
                 viewHolder.eventEndDate.setText("The event will end at: "+ endDate);
+
                 System.out.println("Event name of modelEventPost: " + modelEventPost.getEventName());
 
             }
@@ -110,9 +144,10 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         return mPost.size();
     }
 
+    //Where elements within view holder is declared
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView userName, eventName, eventDescription, eventStartDate, eventEndDate;
-
+        TextView userName, eventName, eventDescription, eventStartDate, eventEndDate;
+        ImageView eventPosterProfilePic;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -121,6 +156,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             eventDescription = itemView.findViewById(R.id.txtEventPostDescription);
             eventStartDate = itemView.findViewById(R.id.txtEventPostStartDate);
             eventEndDate = itemView.findViewById(R.id.txtEventPostEndDate);
+            eventPosterProfilePic = itemView.findViewById(R.id.eventPosterProfilePic);
         }
     }
 

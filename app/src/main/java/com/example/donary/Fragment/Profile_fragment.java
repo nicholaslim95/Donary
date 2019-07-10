@@ -57,7 +57,7 @@ public class Profile_fragment extends Fragment {
         txt_name = (TextView) view.findViewById(R.id.txtProfileName);
         txt_email = (TextView) view.findViewById(R.id.txtProfileEmail);
         btn_update_profile_info = (Button) view.findViewById(R.id.btnUpdateProfileInfo);
-        btnLogout = (Button) view.findViewById(R.id.testBtnLogout);
+        btnLogout = (Button) view.findViewById(R.id.btnLogout);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
