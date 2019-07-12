@@ -1,18 +1,26 @@
 package com.example.donary;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.models.ModelEventPost;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -21,7 +29,11 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,7 +46,12 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
     private Button btnCreateEvent;
     private String locationInformation;
     private FirebaseAuth firebaseAuth;
+    private ImageView createEventImage;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference storageReference;
 
+    private static int PICK_IMAGE = 123;
+    Uri imagePath;
     Date startDate, endDate;
     private int startEndDateidentifier= 0; // To let system know which date (start or end) is selected
     PlacesClient placesClient; //relating to Google Places
@@ -42,6 +59,21 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
             Place.Field.NAME,
             Place.Field.ADDRESS);
     AutocompleteSupportFragment places_fragment;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null){
+            imagePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
+                createEventImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +86,8 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
         setupPlaceAutoComplete();
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
         btnCreateEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +103,12 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
                 DatabaseReference myRef = firebaseDatabase.getReference("Event");
 
                 String eventId = myRef.push().getKey();
-                //Event newEvent = new Event(eventId, eventName,eventDetails, eventLocation, startDate, endDate, noOfParticipants);
+
+                //Storing event image into Firebase Storage
+                StorageReference imageReference = storageReference.child("Event").child(eventId).child("Event image");
+                UploadTask uploadTask = imageReference.putFile(imagePath);
+
+                //Storing into event attributes into Firebase Database
                 ModelEventPost newEvent = new ModelEventPost(eventId, eventName,eventDetails, eventLocation, noOfParticipants ,startDate, endDate, firebaseAuth.getUid());
                 myRef.child(eventId).setValue(newEvent); //.push used to generate unique id when post
 
@@ -94,6 +133,16 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
                 endDatePicker.show(getSupportFragmentManager(), "end date picker");
             }
         });
+
+        createEventImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*"); //application/pdf OR application/*(for documentation), audio/* OR audio/mp3
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select image"), PICK_IMAGE);
+            }
+        });
     }
 
     public void setupFindViewByID(){
@@ -103,6 +152,7 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
         txtCreateEventStartDate = (TextView) findViewById(R.id.txtCreateEventStartDate);
         txtCreateEventEndDate = (TextView) findViewById(R.id.txtCreateEventEndDate);
         btnCreateEvent = (Button) findViewById(R.id.btnCreateEvent);
+        createEventImage = (ImageView) findViewById(R.id.imgCreateEventImage);
     }
 
     private void initPlaces(){

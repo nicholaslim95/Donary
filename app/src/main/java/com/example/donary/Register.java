@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,7 +71,7 @@ public class Register extends AppCompatActivity {
         txt_username = (EditText) findViewById(R.id.txtRegisterUsername);
         //Place user name here
         btn_register = (Button) findViewById(R.id.btnRegister);
-        userProfilePic = (ImageView) findViewById(R.id.imgRegisterProfile);
+        userProfilePic = (ImageView) findViewById(R.id.imgCreateEventImage);
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override

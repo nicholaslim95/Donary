@@ -78,6 +78,18 @@
             android:text="The description of the event post"
             android:autoLink="all"/>
 
+        <ImageView
+            android:id="@+id/imgEventPostImage"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            app:srcCompat="@drawable/ic_event" />
+
+        <TextView
+            android:id="@+id/txtEventPostLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
         <TextView
             android:id="@+id/txtEventPostStartDate"
             android:layout_width="match_parent"

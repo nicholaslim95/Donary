@@ -1,21 +1,34 @@
 package com.example.donary.adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.donary.AddDonationActivity;
+import com.example.donary.ChatActivity;
 import com.example.donary.Event;
 import com.example.donary.EventPost;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelEventPost;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,6 +36,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -38,11 +52,14 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     public Context mContext;
     public List<ModelEventPost> mPost;
 
+    String myUID;
     private FirebaseUser firebaseUser;
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private FirebaseDatabase firebaseDatabase;
     public AdapterEventPost(Context mContext, List<ModelEventPost> mPost) {
         this.mContext = mContext;
         this.mPost = mPost;
+        this.myUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     @NonNull
@@ -55,15 +72,16 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
         //This is where we ge data and assign to viewholder
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         ModelEventPost modelEventPost = mPost.get(i);
 
+        final String eventId =  mPost.get(i).getEventId();
         final String eventName = mPost.get(i).getEventName();
         final String eventDescription = mPost.get(i).getEventDetail();
-
-        //SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
-
+        final String eventLocation = mPost.get(i).getEventLocation();
         final Date eventStartDate = mPost.get(i).getEventStartDate();
         eventStartDate.setYear(eventStartDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
         final Date eventEndDate = mPost.get(i).getEventEndDate();
@@ -73,18 +91,6 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
         final String endDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventEndDate);
         final String userID = mPost.get(i).getEventPoster();
-/*
-        if(modelEventPost.getEventName().equals("")){
-            //use this to hide if there is no event name (but that's impossible, unless like a no image then hide)
-            viewHolder.eventName.setVisibility(View.GONE);
-        }else{
-            //else show the view (applicable for image if it exist)
-            viewHolder.eventName.setVisibility(View.VISIBLE);
-        }
-
-
-
-*/
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Event");
         DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
@@ -97,6 +103,24 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 Picasso.get().load(uri).placeholder(R.drawable.ic_default_img).into(viewHolder.eventPosterProfilePic);
             }
         });
+
+        //To apply event image into event post
+        StorageReference eventImageStorageReference = firebaseStorage.getReference();
+
+        viewHolder.eventPostImage.setVisibility(View.VISIBLE);
+        eventImageStorageReference.child("Event").child(eventId).child("Event image").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).fit().centerCrop().into(viewHolder.eventPostImage);
+                }
+            }).addOnFailureListener(new OnFailureListener() { //IF there is no image for event post, imageView is hidden (object not found errors are expected)
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    viewHolder.eventPostImage.setVisibility(View.GONE);
+                }
+            });
+
 
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -123,9 +147,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 viewHolder.eventDescription.setText(eventDescription);
                 viewHolder.eventStartDate.setText("The event will start at: "+ startDate);
                 viewHolder.eventEndDate.setText("The event will end at: "+ endDate);
-
-                System.out.println("Event name of modelEventPost: " + modelEventPost.getEventName());
-
+                viewHolder.eventLocation.setText("The event is at:\n" + eventLocation);
             }
 
             @Override
@@ -133,9 +155,13 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
             }
         });
-        //viewHolder.eventName.setText(modelEventPost.getEventName());
 
-        //eventPostInfo(viewHolder.eventName, modelEventPost.getEventId());
+        viewHolder.btnEventPostMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMoreOptions(viewHolder.btnEventPostMore, userID, myUID, eventId);
+            }
+        });
 
     }
 
@@ -146,8 +172,9 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
     //Where elements within view holder is declared
     public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView userName, eventName, eventDescription, eventStartDate, eventEndDate;
-        ImageView eventPosterProfilePic;
+        ImageButton btnEventPostMore;
+        TextView userName, eventName, eventDescription, eventLocation, eventStartDate, eventEndDate;
+        ImageView eventPosterProfilePic, eventPostImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -157,10 +184,96 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             eventStartDate = itemView.findViewById(R.id.txtEventPostStartDate);
             eventEndDate = itemView.findViewById(R.id.txtEventPostEndDate);
             eventPosterProfilePic = itemView.findViewById(R.id.eventPosterProfilePic);
+            eventPostImage = itemView.findViewById(R.id.imgEventPostImage);
+            btnEventPostMore = itemView.findViewById(R.id.btnEventPostMore);
+            eventLocation = itemView.findViewById(R.id.txtEventPostLocation);
         }
     }
 
     private void eventPostInfo(final TextView eventName, String eventId){
 
+    }
+
+    private void showMoreOptions(ImageButton btnEventPostMore, final String userID, String myUid, final String eventId) {
+        //creating popup meny currently having option Delete,
+        PopupMenu popupMenu = new PopupMenu(mContext, btnEventPostMore, Gravity.END);
+
+        //show delete option in only post(s) of currently signed-in user
+        if (userID.equals(myUid)) {
+            //add item into menu
+            popupMenu.getMenu().add(Menu.NONE, 1, 0, "Delete");
+        } else {
+            popupMenu.getMenu().add(Menu.NONE, 2, 0, "Message");
+        }
+
+        //item click listener
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == 1) {
+                    //delete is clicked
+                    beginDelete(eventId);
+                } else if (id == 2) {
+                    Intent intent = new Intent(mContext, ChatActivity.class);
+                    intent.putExtra("hisUid", userID);
+                    mContext.startActivity(intent);
+                }
+                return false;
+            }
+        });
+
+        //show menu;
+        popupMenu.show();
+    }
+
+    private void beginDelete(String eventId) {
+        //delete the post and image
+        deleteWithImage(eventId);
+    }
+
+    private void deleteWithImage(final String eventId) {
+        //progress bar
+        final ProgressDialog pd = new ProgressDialog(mContext);
+        pd.setMessage("Deleting...");
+
+        //Delete Image using url
+        StorageReference picRef = FirebaseStorage.getInstance().getReference().child("Event").child(eventId).child("Event image");
+        picRef.delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //Imaged deleted, and delete the databse now
+                        Query fquery = FirebaseDatabase.getInstance().getReference("Event").orderByChild("eventId").equalTo(eventId);
+                        String strEventID = eventId;
+                        fquery.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                        ds.getRef().removeValue(); //remove values from firebase where donateid matches
+                                    }
+                                }
+                                //deleted
+                                Toast.makeText(mContext, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                                pd.dismiss();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    //PUT reload activity
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //failure for delete and show error
+                        pd.dismiss();
+                        Toast.makeText(mContext, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
