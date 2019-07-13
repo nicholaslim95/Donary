@@ -152,7 +152,7 @@ public class AddWishlistActivity extends AppCompatActivity {
 
         DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("Wishlist").child(editWishlistId).child("posImage");
         //if image no changes
-        if(imageUri.equals("")){
+        if(imageUri == null){
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
 

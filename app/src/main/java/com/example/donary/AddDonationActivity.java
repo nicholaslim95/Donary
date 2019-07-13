@@ -152,7 +152,7 @@ public class AddDonationActivity extends AppCompatActivity {
 
         DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("donates").child(editDonateId).child("posImage");
         //if image no changes
-        if(imageUri.equals("")){
+        if(imageUri == null){
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("donates");
 

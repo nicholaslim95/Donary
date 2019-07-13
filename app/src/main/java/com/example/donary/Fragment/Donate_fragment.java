@@ -33,9 +33,9 @@ public class Donate_fragment extends Fragment {
 
         FirebaseAuth firebaseAuth;
 
-        RecyclerView recyclerView;
-        List<ModelPost> postList;
-        AdapterPosts adapterPosts;
+        private RecyclerView recyclerView;
+        private List<ModelPost> postList;
+        private AdapterPosts adapterPosts;
 
     SwipeRefreshLayout pullToRefresh;
     @Nullable
@@ -47,10 +47,9 @@ public class Donate_fragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
 
         recyclerView = view.findViewById(R.id.wishlistRecyclerview);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
-
         recyclerView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
 
@@ -69,7 +68,7 @@ public class Donate_fragment extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddDonationActivity.class);
+                Intent intent = new Intent(getContext(), AddDonationActivity.class);
                 startActivity(intent);
             }
         });
@@ -88,32 +87,15 @@ public class Donate_fragment extends Fragment {
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelPost modelPost =  ds.getValue(ModelPost.class);
                     postList.add(modelPost);
-                    adapterPosts = new AdapterPosts(getActivity(),postList);
+                    adapterPosts = new AdapterPosts(getContext(),postList);
                     recyclerView.setAdapter(adapterPosts);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(),""+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),""+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-/*    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Reload current fragment avoid delete crashed
-        Fragment currentFragment = getFragmentManager().findFragmentByTag("Donate_fragment");
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.detach(currentFragment);
-        fragmentTransaction.attach(currentFragment);
-        fragmentTransaction.commit();
-    }*/
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 }

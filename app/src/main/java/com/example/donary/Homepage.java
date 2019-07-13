@@ -18,35 +18,6 @@ import com.example.donary.Fragment.Wishlist_fragment;
 
 public class Homepage extends AppCompatActivity {
 
-/*
-    private static final String TAG = "Homepage";
-
-    private SectionsPageAdapter mSectionPageAdapter;
-
-    private ViewPager mViewPager;
-
-    //Implementing action bar from action_menu.xml
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.item_profile:
-                openProfileActivity();
-                return true;
-            case R.id.item_settings:
-                openSettingsActivity();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-*/
-
     //----------------------------------------------
     BottomNavigationView bottomNavigationView;
     Fragment selectedFragment = null;

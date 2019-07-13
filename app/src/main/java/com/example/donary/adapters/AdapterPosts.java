@@ -1,5 +1,6 @@
 package com.example.donary.adapters;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.Gravity;
@@ -206,10 +210,6 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             }
         });
 
-        //count the number of requests for donation post
-        isRequest(post.getDonateid(), myHolder.requestBtn);
-        nrRequests(myHolder.pInterestTv, post.getDonateid());
-        getComments(post.getDonateid(), myHolder.pCommentTv);
         myHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,6 +232,10 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             }
         });
 
+        //count the number of requests for donation post
+        getComments(post.getDonateid(), myHolder.pCommentTv);
+        isRequest(post.getDonateid(), myHolder.requestBtn);
+        nrRequests(myHolder.pInterestTv, post.getDonateid());
     }
 
     private void getComments(String donateid, final TextView comments) {
@@ -282,6 +286,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                     intent.putExtra("key", "editDonation");
                     intent.putExtra("editDonationId", donateid);
                     context.startActivity(intent);
+
                 } else if (id == 2) {
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.putExtra("hisUid", donater);
@@ -352,62 +357,65 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                 .child("Request")
                 .child(donateId);
 
-        final DatabaseReference donateref = FirebaseDatabase.getInstance().getReference()
+        final DatabaseReference donaterRef = FirebaseDatabase.getInstance().getReference()
                 .child("donates").child(donateId).child("donater");
 
-        final DatabaseReference donatedref = FirebaseDatabase.getInstance().getReference()
+        final DatabaseReference donatedRef = FirebaseDatabase.getInstance().getReference()
                 .child("donates").child(donateId).child("status");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot1) {
+            public void onDataChange(@NonNull final DataSnapshot requestSnap) {
 
                 //changes the post request button to "View Requests" button for owner
-                donateref.addValueEventListener(new ValueEventListener() {
+                donaterRef.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot2) {
+                    public void onDataChange(@NonNull final DataSnapshot donaterSnap) {
 
-                        donatedref.addValueEventListener(new ValueEventListener() {
+                        donatedRef.addValueEventListener(new ValueEventListener() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
+                            public void onDataChange(@NonNull DataSnapshot donatedSnap) {
 
-                                //check whether the donate item still available
-                                if (dataSnapshot3.getValue().equals("Available")) {
-                                    if (dataSnapshot2.getValue().equals(firebaseUser.getUid())) {
-                                        if (dataSnapshot1.getChildrenCount() >= 1) {
-                                            button.setText("View Requests");
+                                if(donatedSnap.exists() && donaterSnap.exists()){
+                                    //check whether the donate item still available
+                                    if (donatedSnap.getValue().equals("Available")) {
+                                        if (donaterSnap.getValue().equals(firebaseUser.getUid())) {
+                                            if (requestSnap.getChildrenCount() >= 1) {
+                                                button.setText("View Requests");
+                                            } else {
+                                                button.setText("No Requests");
+                                            }
                                         } else {
-                                            button.setText("No Requests");
+                                            //if not owner for that post
+                                            if (requestSnap.child(firebaseUser.getUid()).exists()) {
+                                                button.setText("Requested");
+                                                button.setBackgroundColor(Color.rgb(255, 222, 173));
+                                                button.setEnabled(true);
+                                            } else {
+                                                button.setText("Request");
+                                                button.setBackgroundColor(Color.rgb(255, 255, 255));
+                                            }
                                         }
                                     } else {
-                                        //if not owner for that post
-                                        if (dataSnapshot1.child(firebaseUser.getUid()).exists()) {
-                                            button.setText("Requested");
-                                            button.setBackgroundColor(Color.rgb(255, 222, 173));
-                                            button.setEnabled(true);
-                                        } else {
-                                            button.setText("Request");
-                                            button.setBackgroundColor(Color.rgb(255, 255, 255));
-                                        }
+                                        button.setText("Donated");
+                                        button.setTextColor(Color.rgb(255, 255, 255));
+                                        button.setBackgroundColor(Color.rgb(255, 0, 0));
+                                        button.setEnabled(false);
                                     }
-                                } else {
-                                    button.setText("Donated");
-                                    button.setTextColor(Color.rgb(255, 255, 255));
-                                    button.setBackgroundColor(Color.rgb(255, 0, 0));
-                                    button.setEnabled(false);
                                 }
+
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                Toast.makeText(context, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        Toast.makeText(context, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -415,7 +423,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Toast.makeText(context, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 

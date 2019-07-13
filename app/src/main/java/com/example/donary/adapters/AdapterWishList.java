@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.AddDonationActivity;
+import com.example.donary.AddWishlistActivity;
 import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
 import com.example.donary.ProfileActivity;
@@ -206,9 +207,9 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
                 else if(id==1){
                     //Edit is clicked
                     //start AddDonationActivity with key "editPost" and the id of the post clicked
-                    Intent intent = new Intent(context, AddDonationActivity.class);
-                    intent.putExtra("key","editDonation");
-                    intent.putExtra("editDonationId", wishlistId);
+                    Intent intent = new Intent(context, AddWishlistActivity.class);
+                    intent.putExtra("key","editWishlist");
+                    intent.putExtra("editWishlistId", wishlistId);
                     context.startActivity(intent);
                 }
                 else if(id==2){
