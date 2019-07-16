@@ -1,6 +1,5 @@
 package com.example.donary.adapters;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,11 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,10 +46,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
@@ -96,9 +91,10 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         final ModelPost post = postList.get(i);
 
         //convert time to dd/mm/yyyy hh:mm am/pm
-        Calendar calendar = Calendar.getInstance(Locale.getDefault());
-        calendar.setTimeInMillis(Long.parseLong(pTime));
-        String sTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
+        Long currentTime = Long.parseLong(pTime);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" hh:mm aa dd/MM/yyyy");
+        Date date = new Date(currentTime);
+        String sTime = simpleDateFormat.format(date);
 
         //set user default pic
         StorageReference storageReference = firebaseStorage.getReference();
@@ -239,6 +235,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
     }
 
     private void getComments(String donateid, final TextView comments) {
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Comments").child(donateid);
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -485,4 +482,5 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             profileLayout = itemView.findViewById(R.id.profileLayout);
         }
     }
+
 }
