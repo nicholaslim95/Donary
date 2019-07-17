@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FullScreenImageActivity"></activity>
+        <activity android:name=".EventPostCommentActivity"></activity>
+        <activity android:name=".EventAttendees" />
+        <activity android:name=".FullScreenImageActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".CommentsActivity" />
         <activity android:name=".ForgotPassword" />

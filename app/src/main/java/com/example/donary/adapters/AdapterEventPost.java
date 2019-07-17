@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.example.donary.AddDonationActivity;
 import com.example.donary.ChatActivity;
 import com.example.donary.Event;
+import com.example.donary.EventAttendees;
 import com.example.donary.EventPost;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
@@ -76,7 +77,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
         //This is where we ge data and assign to viewholder
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        ModelEventPost modelEventPost = mPost.get(i);
+        final ModelEventPost modelEventPost = mPost.get(i);
 
         final String eventId =  mPost.get(i).getEventId();
         final String eventName = mPost.get(i).getEventName();
@@ -163,6 +164,42 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             }
         });
 
+        /*viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent  = new Intent(mContext, EventAttendees.class);
+                intent.putExtra("id", userID);
+                intent.putExtra("title", "Attending");
+                mContext.startActivity(intent);
+            }
+        });*/
+
+        isJoined(modelEventPost.getEventId(), viewHolder.btnJoinEvent);
+        showNumberOfAttendees(viewHolder.numberOfParticipants, modelEventPost.getEventId());
+
+        viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(viewHolder.btnJoinEvent.getTag().equals("Join Event")){
+                    FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
+                            .child(firebaseUser.getUid()).setValue(true);
+                }else{
+                    FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
+                            .child(firebaseUser.getUid()).removeValue();
+                }
+            }
+        });
+
+        viewHolder.numberOfParticipants.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, EventAttendees.class);
+                intent.putExtra("id", modelEventPost.getEventId());
+                intent.putExtra("title", "Attending");
+                mContext.startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -173,7 +210,8 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     //Where elements within view holder is declared
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageButton btnEventPostMore;
-        TextView userName, eventName, eventDescription, eventLocation, eventStartDate, eventEndDate;
+        Button btnJoinEvent;
+        TextView userName, eventName, eventDescription,numberOfParticipants, eventLocation, eventStartDate, eventEndDate;
         ImageView eventPosterProfilePic, eventPostImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -187,13 +225,53 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             eventPostImage = itemView.findViewById(R.id.imgEventPostImage);
             btnEventPostMore = itemView.findViewById(R.id.btnEventPostMore);
             eventLocation = itemView.findViewById(R.id.txtEventPostLocation);
+            btnJoinEvent = itemView.findViewById(R.id.btnJoinEvent);
+            numberOfParticipants = itemView.findViewById(R.id.txtNoOfPeopleGoing);
         }
     }
 
-    private void eventPostInfo(final TextView eventName, String eventId){
+    //To see if user had joined event
+    private void isJoined(final String eventId, final Button btnJoinEvent){
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("EventAttendees").child(eventId);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child(firebaseUser.getUid()).exists()){
+                    btnJoinEvent.setText("Attending");
+                    btnJoinEvent.setTag("Attending");
+                }else{
+                    btnJoinEvent.setText("Join Event");
+                    btnJoinEvent.setTag("Join Event");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    //To display the number of attendees on event post
+    private void showNumberOfAttendees (final TextView numberOfAttendees, String eventId){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("EventAttendees").child(eventId);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                numberOfAttendees.setText(dataSnapshot.getChildrenCount() + " people attending.");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     private void showMoreOptions(ImageButton btnEventPostMore, final String userID, String myUid, final String eventId) {
         //creating popup meny currently having option Delete,
         PopupMenu popupMenu = new PopupMenu(mContext, btnEventPostMore, Gravity.END);
