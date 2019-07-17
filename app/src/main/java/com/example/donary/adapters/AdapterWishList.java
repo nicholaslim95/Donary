@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +20,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.donary.AddDonationActivity;
+import com.example.donary.AddWishlistActivity;
 import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
 import com.example.donary.ProfileActivity;
@@ -42,9 +41,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHolder>{
 
@@ -85,9 +84,10 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
         final ModelWishlist wishlist = this.wishlist.get(i);
 
         //convert time to dd/mm/yyyy hh:mm am/pm
-        Calendar calendar = Calendar.getInstance(Locale.getDefault());
-        calendar.setTimeInMillis(Long.parseLong(pTime));
-        String sTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
+        Long currentTime = Long.parseLong(pTime);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" hh:mm aa dd/MM/yyyy");
+        Date date = new Date(currentTime);
+        String sTime = simpleDateFormat.format(date);
 
         //set user default pic
         StorageReference storageReference = firebaseStorage.getReference();
@@ -206,9 +206,9 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
                 else if(id==1){
                     //Edit is clicked
                     //start AddDonationActivity with key "editPost" and the id of the post clicked
-                    Intent intent = new Intent(context, AddDonationActivity.class);
-                    intent.putExtra("key","editDonation");
-                    intent.putExtra("editDonationId", wishlistId);
+                    Intent intent = new Intent(context, AddWishlistActivity.class);
+                    intent.putExtra("key","editWishlist");
+                    intent.putExtra("editWishlistId", wishlistId);
                     context.startActivity(intent);
                 }
                 else if(id==2){

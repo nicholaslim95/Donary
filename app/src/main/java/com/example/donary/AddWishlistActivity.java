@@ -129,6 +129,7 @@ public class AddWishlistActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
     private void beginUpdate(String editTitle, String editDescription, String editWishlistId) {
@@ -152,7 +153,7 @@ public class AddWishlistActivity extends AppCompatActivity {
 
         DatabaseReference refimageused = FirebaseDatabase.getInstance().getReference("Wishlist").child(editWishlistId).child("posImage");
         //if image no changes
-        if(imageUri.equals("")){
+        if(imageUri == null){
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
 
@@ -248,6 +249,7 @@ public class AddWishlistActivity extends AppCompatActivity {
     }
 
     private void loadPostData(final String editWishlistId) {
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist");
         //get detail of post using if of post
         Query fquery = reference.orderByChild("wishlistid").equalTo(editWishlistId);

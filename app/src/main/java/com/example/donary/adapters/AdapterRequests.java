@@ -31,11 +31,12 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 
-public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHolder>{
+public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHolder> {
 
     Context context;
     List<ModelRequest> requestList;
@@ -102,7 +103,6 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.pReasonTv.setText(reason);
 
 
-
         myHolder.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,16 +116,17 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
                 reference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-                            if (ds.getKey().equals(request.getRequester())){
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (ds.getKey().equals(request.getRequester())) {
                                 reference.child(ds.getKey()).child("status").setValue("Accepted");
-                            }
-                            else{
+                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "accepted your request.");
+                            } else {
                                 reference.child(ds.getKey()).child("status").setValue("Rejected");
+                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "rejected your request.");
                             }
                         }
                         donateRef.child(request.getDonateid()).child("status").setValue("Donated");
-                        Toast.makeText(context,"Donate Successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Donate Successful", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -148,9 +149,10 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
                 reference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-                            if (ds.getKey().equals(request.getRequester())){
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            if (ds.getKey().equals(request.getRequester())) {
                                 reference.child(ds.getKey()).child("status").setValue("Rejected");
+                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "rejected your request.");
                             }
                         }
                     }
@@ -174,7 +176,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
     }
 
     //Hide btn accept or reject based on the status in Request in firebase
-    private void isAccept(final String donateId, final String requesterid, final Button btnAccept, final Button btnReject){
+    private void isAccept(final String donateId, final String requesterid, final Button btnAccept, final Button btnReject) {
 
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Request").child(donateId);
@@ -183,27 +185,25 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.child(requesterid).child("status").getValue().equals("Accepted")){
+                if (dataSnapshot.child(requesterid).child("status").getValue().equals("Accepted")) {
                     btnAccept.setText("Accepted");
-                    btnAccept.setTextColor(Color.rgb(50,205,50));
+                    btnAccept.setTextColor(Color.rgb(50, 205, 50));
                     btnAccept.setEnabled(false);
                     btnAccept.setVisibility(View.VISIBLE);
                     btnReject.setVisibility(View.GONE);
-                }
-                else if(dataSnapshot.child(requesterid).child("status").getValue().equals("Requesting")){
+                } else if (dataSnapshot.child(requesterid).child("status").getValue().equals("Requesting")) {
                     btnAccept.setText("Accept");
                     btnReject.setText("Reject");
-                    btnAccept.setTextColor(Color.rgb(0,0,0));
-                    btnReject.setTextColor(Color.rgb(0,0,0));
+                    btnAccept.setTextColor(Color.rgb(0, 0, 0));
+                    btnReject.setTextColor(Color.rgb(0, 0, 0));
                     btnAccept.setEnabled(true);
                     btnReject.setEnabled(true);
                     btnAccept.setVisibility(View.VISIBLE);
                     btnReject.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     btnReject.setText("Rejected");
                     btnReject.setEnabled(false);
-                    btnReject.setTextColor(Color.rgb(255,0,0));
+                    btnReject.setTextColor(Color.rgb(255, 0, 0));
                     btnAccept.setVisibility(View.GONE);
                     btnReject.setVisibility(View.VISIBLE);
                 }
@@ -216,29 +216,67 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         });
 
 
-
     }
 
     //view holder class
-    class MyHolder extends RecyclerView.ViewHolder{
+    class MyHolder extends RecyclerView.ViewHolder {
 
         //views from row_post.xml
-        ImageView requesterIv ;
+        ImageView requesterIv;
         TextView requesterNameTv, requestTimeTv, pReasonTv;
         Button acceptBtn, rejectBtn;
         LinearLayout requesterLayout;
 
-        public MyHolder(@NonNull View itemView){
+        public MyHolder(@NonNull View itemView) {
             super(itemView);
 
             //init views
             requesterNameTv = itemView.findViewById(R.id.requesterNameTv);
-            requestTimeTv= itemView.findViewById(R.id.requesterTimeTv);
+            requestTimeTv = itemView.findViewById(R.id.requesterTimeTv);
             requesterIv = itemView.findViewById(R.id.requesterIv);
             acceptBtn = itemView.findViewById(R.id.acceptBtn);
             rejectBtn = itemView.findViewById(R.id.rejectBtn);
             requesterLayout = itemView.findViewById(R.id.requesterLayout);
             pReasonTv = itemView.findViewById(R.id.pReasonTv);
         }
+    }
+
+    private void addNotification(String userid, final String postid, final String notiText) {
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() == null){
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("userid", firebaseUser.getUid());
+                        hashMap.put("text", notiText);
+                        hashMap.put("postid", postid);
+                        hashMap.put("ispost", "havent");
+
+                        reference.child(postid).setValue(hashMap);
+                    }
+                    //used this to avoid save 2 times same data into firebase
+                    else{
+                        for(DataSnapshot ds : dataSnapshot.getChildren()){
+                            String existPost = ds.child("postid").getValue().toString();
+                            if(!existPost.equals(postid)){
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("userid", firebaseUser.getUid());
+                                hashMap.put("text", notiText);
+                                hashMap.put("postid", postid);
+                                hashMap.put("ispost", "havent");
+
+                                reference.child(postid).setValue(hashMap);
+                        }
+                        }
+                    }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

@@ -34,9 +34,9 @@ public class Wishlist_fragment extends Fragment {
 
     FirebaseAuth firebaseAuth;
 
-    RecyclerView recyclerView;
-    List<ModelWishlist> wishlist;
-    AdapterWishList adapterWishList;
+    private RecyclerView recyclerView;
+    private List<ModelWishlist> wishlist;
+    private AdapterWishList adapterWishList;
 
     SwipeRefreshLayout pullToRefresh;
     @Nullable
@@ -44,14 +44,12 @@ public class Wishlist_fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wishlist, container, false);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
 
         recyclerView = view.findViewById(R.id.wishlistRecyclerview);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
-
         recyclerView.setLayoutManager(layoutManager);
         wishlist = new ArrayList<>();
 
@@ -70,7 +68,7 @@ public class Wishlist_fragment extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddWishlistActivity.class);
+                Intent intent = new Intent(getContext(), AddWishlistActivity.class);
                 startActivity(intent);
             }
         });
@@ -88,31 +86,17 @@ public class Wishlist_fragment extends Fragment {
                 wishlist.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     ModelWishlist modelWishlist =  ds.getValue(ModelWishlist.class);
-
                     wishlist.add(modelWishlist);
-
-                    adapterWishList = new AdapterWishList(getActivity(), wishlist);
+                    adapterWishList = new AdapterWishList(getContext(), wishlist);
                     recyclerView.setAdapter(adapterWishList);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(),""+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),""+databaseError.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Reload current fragment avoid delete crashed
-        Fragment currentFragment = getFragmentManager().findFragmentByTag("tab3_fragment");
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.detach(currentFragment);
-        fragmentTransaction.attach(currentFragment);
-        fragmentTransaction.commit();
     }
 
 }
