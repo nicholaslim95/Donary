@@ -23,9 +23,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.donary.AddDonationActivity;
 import com.example.donary.ChatActivity;
+import com.example.donary.CommentsActivity;
 import com.example.donary.Event;
 import com.example.donary.EventAttendees;
 import com.example.donary.EventPost;
+import com.example.donary.EventPostCommentActivity;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelEventPost;
@@ -200,6 +202,16 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             }
         });
 
+        viewHolder.btnEventComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, EventPostCommentActivity.class);
+                intent.putExtra("eventid", modelEventPost.getEventId());
+                intent.putExtra("commenter", modelEventPost.getEventPoster());
+                mContext.startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -210,7 +222,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     //Where elements within view holder is declared
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageButton btnEventPostMore;
-        Button btnJoinEvent;
+        Button btnJoinEvent, btnEventComment;
         TextView userName, eventName, eventDescription,numberOfParticipants, eventLocation, eventStartDate, eventEndDate;
         ImageView eventPosterProfilePic, eventPostImage;
         public ViewHolder(@NonNull View itemView) {
@@ -227,6 +239,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             eventLocation = itemView.findViewById(R.id.txtEventPostLocation);
             btnJoinEvent = itemView.findViewById(R.id.btnJoinEvent);
             numberOfParticipants = itemView.findViewById(R.id.txtNoOfPeopleGoing);
+            btnEventComment = itemView.findViewById(R.id.btnEventPostComment);
         }
     }
 
