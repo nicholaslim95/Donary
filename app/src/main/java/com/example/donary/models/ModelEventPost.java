@@ -11,7 +11,7 @@ public class ModelEventPost {
     private Date eventStartDate;
     private Date eventEndDate;
     private String eventPoster;
-
+    private String eventStatus;
     public ModelEventPost(){
 
     }
@@ -89,5 +89,13 @@ public class ModelEventPost {
 
     public void setEventPoster(String eventPoster) {
         this.eventPoster = eventPoster;
+    }
+
+    public String getEventStatus() {
+        return eventStatus;
+    }
+
+    public void setEventStatus(String eventStatus) {
+        this.eventStatus = eventStatus;
     }
 }

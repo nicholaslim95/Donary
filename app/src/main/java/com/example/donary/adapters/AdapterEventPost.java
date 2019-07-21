@@ -79,39 +79,45 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
         //This is where we ge data and assign to viewholder
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        final ModelEventPost modelEventPost = mPost.get(i);
 
-        final String eventId =  mPost.get(i).getEventId();
-        final String eventName = mPost.get(i).getEventName();
-        final String eventDescription = mPost.get(i).getEventDetail();
-        final String eventLocation = mPost.get(i).getEventLocation();
-        final Date eventStartDate = mPost.get(i).getEventStartDate();
-        eventStartDate.setYear(eventStartDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
-        final Date eventEndDate = mPost.get(i).getEventEndDate();
-        eventEndDate.setYear(eventEndDate.getYear() - 1900);
-        //final String startDate = dateFormat.format(eventStartDate);
-        //final String endDate = dateFormat.format(eventEndDate);
-        final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
-        final String endDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventEndDate);
-        final String userID = mPost.get(i).getEventPoster();
+        if(mPost.get(i).getEventStatus().equals("Invalid")){
+            //Dont bind event as they have been "deleted". (Still in database)
+            removeAt(viewHolder.getAdapterPosition());
+            //viewHolder.itemView.setVisibility(View.GONE);
+        }else{
+            final ModelEventPost modelEventPost = mPost.get(i);
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Event");
-        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+            final String eventId =  mPost.get(i).getEventId();
+            final String eventName = mPost.get(i).getEventName();
+            final String eventDescription = mPost.get(i).getEventDetail();
+            final String eventLocation = mPost.get(i).getEventLocation();
+            final Date eventStartDate = mPost.get(i).getEventStartDate();
+            eventStartDate.setYear(eventStartDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
+            final Date eventEndDate = mPost.get(i).getEventEndDate();
+            eventEndDate.setYear(eventEndDate.getYear() - 1900);
+            //final String startDate = dateFormat.format(eventStartDate);
+            //final String endDate = dateFormat.format(eventEndDate);
+            final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
+            final String endDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventEndDate);
+            final String userID = mPost.get(i).getEventPoster();
 
-        //To apply user's profile picture to event post
-        StorageReference storageReference = firebaseStorage.getReference();
-        storageReference.child("Users").child(userID).child("Profile pic").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).placeholder(R.drawable.ic_default_img).into(viewHolder.eventPosterProfilePic);
-            }
-        });
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Event");
+            DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
-        //To apply event image into event post
-        StorageReference eventImageStorageReference = firebaseStorage.getReference();
+            //To apply user's profile picture to event post
+            StorageReference storageReference = firebaseStorage.getReference();
+            storageReference.child("Users").child(userID).child("Profile pic").child(userID).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).placeholder(R.drawable.ic_default_img).into(viewHolder.eventPosterProfilePic);
+                }
+            });
 
-        viewHolder.eventPostImage.setVisibility(View.VISIBLE);
-        eventImageStorageReference.child("Event").child(eventId).child("Event image").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            //To apply event image into event post
+            StorageReference eventImageStorageReference = firebaseStorage.getReference();
+
+            viewHolder.eventPostImage.setVisibility(View.VISIBLE);
+            eventImageStorageReference.child("Event").child(eventId).child("Event image").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 
                 @Override
                 public void onSuccess(Uri uri) {
@@ -125,46 +131,47 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             });
 
 
-        userReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                viewHolder.userName.setText(userProfile.getUserName());
-            }
+            userReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                    viewHolder.userName.setText(userProfile.getUserName());
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
 
-        //To apply event details to event post
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ModelEventPost modelEventPost = dataSnapshot.getValue(ModelEventPost.class);
+            //To apply event details to event post
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ModelEventPost modelEventPost = dataSnapshot.getValue(ModelEventPost.class);
 
-                //Profile image may be needed here
+                    //Profile image may be needed here
 
-                viewHolder.eventName.setText(eventName);
-                viewHolder.eventDescription.setText(eventDescription);
-                viewHolder.eventStartDate.setText("The event will start at: "+ startDate);
-                viewHolder.eventEndDate.setText("The event will end at: "+ endDate);
-                viewHolder.eventLocation.setText("The event is at:\n" + eventLocation);
-            }
+                        viewHolder.eventName.setText(eventName);
+                        viewHolder.eventDescription.setText(eventDescription);
+                        viewHolder.eventStartDate.setText("Event starts at: " + startDate);
+                        viewHolder.eventEndDate.setText("Event ends at: " + endDate);
+                        viewHolder.eventLocation.setText("Event located at:\n" + eventLocation);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
 
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        viewHolder.btnEventPostMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMoreOptions(viewHolder.btnEventPostMore, userID, myUID, eventId);
-            }
-        });
+                }
+            });
+
+            viewHolder.btnEventPostMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMoreOptions(viewHolder.btnEventPostMore, userID, myUID, eventId);
+                }
+            });
 
         /*viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,41 +183,43 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             }
         });*/
 
-        isJoined(modelEventPost.getEventId(), viewHolder.btnJoinEvent);
-        showNumberOfAttendees(viewHolder.numberOfParticipants, modelEventPost.getEventId());
-
-        viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(viewHolder.btnJoinEvent.getTag().equals("Join Event")){
-                    FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
-                            .child(firebaseUser.getUid()).setValue(true);
-                }else{
-                    FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
-                            .child(firebaseUser.getUid()).removeValue();
+            isJoined(modelEventPost.getEventId(), viewHolder.btnJoinEvent);
+            showNumberOfAttendees(viewHolder.numberOfParticipants, modelEventPost.getEventId());
+            showNumberOfComments(viewHolder.numberOfComments, modelEventPost.getEventId());
+            viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(viewHolder.btnJoinEvent.getTag().equals("Join Event")){
+                        FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
+                                .child(firebaseUser.getUid()).setValue(true);
+                    }else{
+                        FirebaseDatabase.getInstance().getReference().child("EventAttendees").child(modelEventPost.getEventId())
+                                .child(firebaseUser.getUid()).removeValue();
+                    }
                 }
-            }
-        });
+            });
 
-        viewHolder.numberOfParticipants.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, EventAttendees.class);
-                intent.putExtra("id", modelEventPost.getEventId());
-                intent.putExtra("title", "Attending");
-                mContext.startActivity(intent);
-            }
-        });
+            viewHolder.numberOfParticipants.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, EventAttendees.class);
+                    intent.putExtra("id", modelEventPost.getEventId());
+                    intent.putExtra("title", "Attending");
+                    mContext.startActivity(intent);
+                }
+            });
 
-        viewHolder.btnEventComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, EventPostCommentActivity.class);
-                intent.putExtra("eventid", modelEventPost.getEventId());
-                intent.putExtra("commenter", modelEventPost.getEventPoster());
-                mContext.startActivity(intent);
-            }
-        });
+            viewHolder.btnEventComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, EventPostCommentActivity.class);
+                    intent.putExtra("eventid", modelEventPost.getEventId());
+                    intent.putExtra("commenter", modelEventPost.getEventPoster());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
+
 
     }
 
@@ -223,7 +232,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageButton btnEventPostMore;
         Button btnJoinEvent, btnEventComment;
-        TextView userName, eventName, eventDescription,numberOfParticipants, eventLocation, eventStartDate, eventEndDate;
+        TextView userName, eventName, eventDescription,numberOfParticipants,numberOfComments, eventLocation, eventStartDate, eventEndDate;
         ImageView eventPosterProfilePic, eventPostImage;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -239,6 +248,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             eventLocation = itemView.findViewById(R.id.txtEventPostLocation);
             btnJoinEvent = itemView.findViewById(R.id.btnJoinEvent);
             numberOfParticipants = itemView.findViewById(R.id.txtNoOfPeopleGoing);
+            numberOfComments = itemView.findViewById(R.id.txtEventPostComment);
             btnEventComment = itemView.findViewById(R.id.btnEventPostComment);
         }
     }
@@ -277,6 +287,23 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 numberOfAttendees.setText(dataSnapshot.getChildrenCount() + " people attending.");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //To display the number of attendees on event post
+    private void showNumberOfComments (final TextView numberOfComments, String eventId){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("EventPostComments").child(eventId);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                numberOfComments.setText(dataSnapshot.getChildrenCount() + " comment.");
             }
 
             @Override
@@ -328,7 +355,25 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         final ProgressDialog pd = new ProgressDialog(mContext);
         pd.setMessage("Deleting...");
 
-        //Delete Image using url
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Event").child(eventId);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ModelEventPost modelEventPost = dataSnapshot.getValue(ModelEventPost.class);
+
+                modelEventPost.setEventStatus("Invalid");
+                reference.setValue(modelEventPost);
+                Toast.makeText(mContext, "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                pd.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        /*//Delete Image using url
         StorageReference picRef = FirebaseStorage.getInstance().getReference().child("Event").child(eventId).child("Event image");
         picRef.delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -365,6 +410,10 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                         pd.dismiss();
                         Toast.makeText(mContext, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
+    }
+
+    public void removeAt(int position){
+        mPost.remove(position);
     }
 }

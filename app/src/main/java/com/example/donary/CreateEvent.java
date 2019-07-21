@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.LocaleList;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -35,6 +36,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +47,7 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
 
     private TextView txtCreateEventName, txtCreateEventDetails, txtNoOfParticipants, txtCreateEventStartDate, txtCreateEventEndDate;
     private Button btnCreateEvent;
-    private String locationInformation;
+    private String locationInformation = "";
     private FirebaseAuth firebaseAuth;
     private ImageView createEventImage;
     private FirebaseStorage firebaseStorage;
@@ -91,28 +94,98 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
         btnCreateEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String eventName, eventDetails, eventLocation;
-                int noOfParticipants;
+
+                String eventName = "", eventDetails = "", eventLocation= "", tempStrNoOfParticipants = "";
+                int noOfParticipants = 0;
+
+                //locationInformation = "";
                 eventName = txtCreateEventName.getText().toString();
                 eventDetails = txtCreateEventDetails.getText().toString();
                 eventLocation = locationInformation;
+                tempStrNoOfParticipants = txtNoOfParticipants.getText().toString();
+                Date currentDate = new Date();
 
-                noOfParticipants = Integer.parseInt(txtNoOfParticipants.getText().toString());
+                boolean eventNameFilled = false, eventDetailsFilled = false, eventLocationFilled = false,
+                        eventStartDateLegitimate = false, eventEndDateLegitimate  = false, eventNoOfParticipantsFilled = false;
 
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = firebaseDatabase.getReference("Event");
+                //checking event details
+                if (eventName == null || eventName.isEmpty() || eventName.equals("")){
+                    Toast.makeText(CreateEvent.this, "Please fill event name.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    eventNameFilled = true;
+                }
+                if (eventDetails == null || eventDetails.isEmpty() || eventDetails.equals("")){
+                    Toast.makeText(CreateEvent.this, "Please fill event details.", Toast.LENGTH_SHORT).show();
+                }else{
+                    eventDetailsFilled = true;
+                }
+                if (eventLocation == null || eventLocation.isEmpty() || eventLocation.equals("")){
+                    Toast.makeText(CreateEvent.this, "Where is this event located?", Toast.LENGTH_SHORT).show();
+                }else{
+                    eventLocationFilled = true;
+                }
+                //going around number of participants issue
+                if(tempStrNoOfParticipants != null && tempStrNoOfParticipants.isEmpty() == false){
+                    noOfParticipants = Integer.parseInt(tempStrNoOfParticipants);
+                    if(noOfParticipants <= 0){
+                        Toast.makeText(CreateEvent.this, "Make sure there's more than one person attending", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        eventNoOfParticipantsFilled = true;
+                    }
+                }
+                else{
+                    Toast.makeText(CreateEvent.this, "How many people attending this event?", Toast.LENGTH_SHORT).show();
+                }
+                //if event time earlier than current time
+                if (startDate == null || endDate == null){
+                    Toast.makeText(CreateEvent.this, "Please make sure all dates are selected.", Toast.LENGTH_SHORT).show();
+                }
+                else if(startDate.after(endDate)){
+                    Toast.makeText(CreateEvent.this, "Starting date is later than ending date", Toast.LENGTH_SHORT).show();
+                }
+                else if(startDate.before(currentDate) || endDate.before(currentDate)) {
+                    Toast.makeText(CreateEvent.this, "Please make sure the date is after the current date", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    eventStartDateLegitimate = true;
+                    eventEndDateLegitimate = true;
+                }
 
-                String eventId = myRef.push().getKey();
+                if( eventNameFilled == true && eventDetailsFilled == true && eventLocationFilled == true &&
+                        eventStartDateLegitimate == true && eventEndDateLegitimate  == true && eventNoOfParticipantsFilled == true){
+                    if(imagePath != null){
+                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = firebaseDatabase.getReference("Event");
 
-                //Storing event image into Firebase Storage
-                StorageReference imageReference = storageReference.child("Event").child(eventId).child("Event image");
-                UploadTask uploadTask = imageReference.putFile(imagePath);
+                        String eventId = myRef.push().getKey();
 
-                //Storing into event attributes into Firebase Database
-                ModelEventPost newEvent = new ModelEventPost(eventId, eventName,eventDetails, eventLocation, noOfParticipants ,startDate, endDate, firebaseAuth.getUid());
-                myRef.child(eventId).setValue(newEvent); //.push used to generate unique id when post
+                        //Storing event image into Firebase Storage
+                        StorageReference imageReference = storageReference.child("Event").child(eventId).child("Event image");
+                        UploadTask uploadTask = imageReference.putFile(imagePath);
 
-                Toast.makeText(CreateEvent.this, "Event successfully created.", Toast.LENGTH_SHORT).show();
+                        //Storing into event attributes into Firebase Database
+                        ModelEventPost newEvent = new ModelEventPost(eventId, eventName,eventDetails, eventLocation, noOfParticipants ,startDate, endDate, firebaseAuth.getUid());
+                        newEvent.setEventStatus("Valid");
+                        myRef.child(eventId).setValue(newEvent); //.push used to generate unique id when post
+
+                        Toast.makeText(CreateEvent.this, "Event successfully created.", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = firebaseDatabase.getReference("Event");
+
+                        String eventId = myRef.push().getKey();
+
+                        //Storing into event attributes into Firebase Database
+                        ModelEventPost newEvent = new ModelEventPost(eventId, eventName,eventDetails, eventLocation, noOfParticipants ,startDate, endDate, firebaseAuth.getUid());
+                        newEvent.setEventStatus("Valid");
+                        myRef.child(eventId).setValue(newEvent); //.push used to generate unique id when post
+
+                        Toast.makeText(CreateEvent.this, "Event successfully created.", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
         txtCreateEventStartDate.setOnClickListener(new View.OnClickListener() {
