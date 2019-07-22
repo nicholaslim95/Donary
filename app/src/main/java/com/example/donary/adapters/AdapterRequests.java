@@ -18,6 +18,12 @@ import android.widget.Toast;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelRequest;
+import com.example.donary.notifications.APIService;
+import com.example.donary.notifications.Client;
+import com.example.donary.notifications.Data;
+import com.example.donary.notifications.Response;
+import com.example.donary.notifications.Sender;
+import com.example.donary.notifications.Token;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,6 +31,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,6 +42,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 
 public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHolder> {
 
@@ -44,6 +54,8 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
     FirebaseDatabase firebaseDatabase;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+    APIService apiService;
+    boolean notify = false;
 
     public AdapterRequests(Context context, List<ModelRequest> requestList) {
         this.context = context;
@@ -60,6 +72,9 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
 
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
+
+        //create Aapi service
+        apiService = Client.getRetrofit("https://fcm.googleapis.com/").create(APIService.class);
 
         String reason = requestList.get(i).getReason();
         //get data
@@ -106,7 +121,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                notify= true;
                 final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
                         .child(request.getDonateid());
 
@@ -141,7 +156,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                notify= true;
                 final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
                         .child(request.getDonateid());
 
@@ -241,7 +256,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         }
     }
 
-    private void addNotification(String userid, final String postid, final String notiText) {
+    private void addNotification(final String userid, final String postid, final String notiText) {
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -251,9 +266,27 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
                         hashMap.put("userid", firebaseUser.getUid());
                         hashMap.put("text", notiText);
                         hashMap.put("postid", postid);
-                        hashMap.put("ispost", "havent");
 
                         reference.child(postid).setValue(hashMap);
+
+                        String msg = notiText;
+                        final DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+                        database.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                UserProfile user = dataSnapshot.getValue(UserProfile.class);
+
+                                if(notify){
+                                    sendNotification(userid, user.getUserName(), notiText);
+                                }
+                                notify = false;
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
                     //used this to avoid save 2 times same data into firebase
                     else{
@@ -278,5 +311,39 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
             }
         });
 
+    }
+
+    private void sendNotification(final String userid, final String userName, final String notiText) {
+        DatabaseReference allTokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query query = allTokens.orderByKey().equalTo(userid);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Token token = ds.getValue(Token.class);
+                    Data data = new Data(firebaseUser.getUid(), userName + " " +notiText,
+                            "New Notification", userid, R.drawable.accept);
+
+                    Sender sender = new Sender(data, token.getToken());
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<Response>() {
+                                @Override
+                                public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Toast.makeText(context, ""+response.message(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(Call<Response> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

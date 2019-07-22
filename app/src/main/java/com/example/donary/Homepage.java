@@ -1,6 +1,5 @@
 package com.example.donary;
 
-import android.app.Notification;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -19,13 +17,12 @@ import com.example.donary.Fragment.Event_fragment;
 import com.example.donary.Fragment.Message_fragment;
 import com.example.donary.Fragment.Profile_fragment;
 import com.example.donary.Fragment.Wishlist_fragment;
+import com.example.donary.notifications.Token;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class Homepage extends AppCompatActivity {
 
@@ -36,6 +33,9 @@ public class Homepage extends AppCompatActivity {
     private final long[] pattern = {100, 300, 300, 300};
     private NotificationManagerCompat mnotificationManager;
     private String sText, sDonater, sSeen;
+
+    //real noti
+    String mUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     FirebaseDatabase firebaseDatabase;
@@ -62,16 +62,6 @@ public class Homepage extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 new Donate_fragment()).commit();
         //----------------------------------------------
-      /*  Log.d(TAG, "onCreate: Starting");
-
-        mSectionPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        setupViewPager(mViewPager);
-
-        //Applying custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
 
         Bundle intent = getIntent().getExtras();
         if (intent != null) {
@@ -88,16 +78,51 @@ public class Homepage extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
                     , new Donate_fragment()).commit();
         }
-/*
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);*/
 
+        checkUserStatus();
+
+        //update Token
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+    }
+
+    @Override
+    protected void onResume() {
+        checkUserStatus();
+        super.onResume();
+    }
+
+    public void updateToken(String token){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token mToken = new Token(token);
+        ref.child(mUID).setValue(mToken);
+
+    }
+
+    private void checkUserStatus(){
+        //get current user
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null){
+            //user is signed in
+            mUID = user.getUid();
+
+            //save uid of currently signed in user in shared preferences
+            SharedPreferences sp = getSharedPreferences("SP_USER", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("Current_USERID", mUID);
+            editor.apply();
+        }
+        else {
+            //user not signed in
+            startActivity(new Intent(Homepage.this, MainActivity.class));
+            finish();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getData();
+        //getData();
 
     }
 
@@ -154,6 +179,7 @@ public class Homepage extends AppCompatActivity {
         startActivity(intent);
     }
 
+/*
     public void sendOnChannel1(String Text, String donater) {
 
         Notification notification = new NotificationCompat.Builder(this)
@@ -169,6 +195,7 @@ public class Homepage extends AppCompatActivity {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
 
+*/
 /*        Notification summaryNotification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.accept)
                 .setContentTitle("Donary")
@@ -180,10 +207,12 @@ public class Homepage extends AppCompatActivity {
                 .setNumber(++messageCount)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .build();*/
+                .build();*//*
+
 
         mnotificationManager.notify(1, notification);
     }
+
 
     public void getData() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Notifications").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -242,5 +271,7 @@ public class Homepage extends AppCompatActivity {
 
         }
     }
+*/
+
 
 }
