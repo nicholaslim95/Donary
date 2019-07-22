@@ -82,8 +82,9 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
         if(mPost.get(i).getEventStatus().equals("Invalid")){
             //Dont bind event as they have been "deleted". (Still in database)
-            removeAt(viewHolder.getAdapterPosition());
-            //viewHolder.itemView.setVisibility(View.GONE);
+            //removeAt(viewHolder.getAdapterPosition());
+            viewHolder.itemView.setVisibility(View.GONE);
+            viewHolder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }else{
             final ModelEventPost modelEventPost = mPost.get(i);
 
@@ -286,7 +287,14 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                numberOfAttendees.setText(dataSnapshot.getChildrenCount() + " people attending.");
+                if(dataSnapshot.getChildrenCount() > 0){
+                    numberOfAttendees.setText(dataSnapshot.getChildrenCount() + " people attending.");
+                    numberOfAttendees.setClickable(true);
+                }else{
+                    numberOfAttendees.setText(dataSnapshot.getChildrenCount() + " people attending.");
+                    numberOfAttendees.setClickable(false);
+                }
+
             }
 
             @Override
