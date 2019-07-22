@@ -72,6 +72,7 @@ public class Notification_fragment extends AppCompatActivity {
 
     }
 
+
     //back to previous fragment
     @Override
     public void onBackPressed(){

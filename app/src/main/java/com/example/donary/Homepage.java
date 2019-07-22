@@ -91,6 +91,12 @@ public class Homepage extends AppCompatActivity {
 /*
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);*/
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         getData();
 
     }
@@ -155,12 +161,26 @@ public class Homepage extends AppCompatActivity {
                 .setContentTitle("Donary")
                 .setContentText(donater + " " + Text)
                 .setTicker("New Notification")
+                .setGroup("notificationGroup")
                 .setSound(alarmSound)
                 .setVibrate(pattern)
                 .setNumber(++messageCount)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
+
+/*        Notification summaryNotification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.accept)
+                .setContentTitle("Donary")
+                .setContentText(donater + " notification.")
+                .setTicker("New Notification")
+                .setGroup("notificationGroup")
+                .setSound(alarmSound)
+                .setVibrate(pattern)
+                .setNumber(++messageCount)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();*/
 
         mnotificationManager.notify(1, notification);
     }
@@ -207,7 +227,8 @@ public class Homepage extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for(DataSnapshot ds : dataSnapshot.getChildren()){
-                        reference.child(ds.getKey()).child("ispost").setValue("Seen");
+
+                            reference.child(ds.getKey()).child("ispost").setValue("Seen");
                     }
 
                 }
