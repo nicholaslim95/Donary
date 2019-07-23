@@ -3,7 +3,7 @@
     package="com.example.donary">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -14,14 +14,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EventPostCommentActivity" />
+        <activity android:name=".EventPostCommentActivity"></activity>
         <activity android:name=".EventAttendees" />
         <activity android:name=".FullScreenImageActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".CommentsActivity" />
         <activity android:name=".ForgotPassword" />
         <activity android:name=".ViewRequestsActivity" />
-        <activity android:name=".Fragment.Notification_fragment" />
+        <activity android:name=".Fragment.Notification_fragment"/>
         <activity android:name=".CreateEvent" />
         <activity android:name=".ChangePassword" />
         <activity android:name=".UpdateProfile" />
@@ -34,40 +34,31 @@
             android:name=".Homepage"
             android:label="@string/title_activity_homepage"
             android:theme="@style/AppTheme" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name=".MainActivity">
-
         </activity>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
 
-        <service
-            android:name=".notifications.FirebaseService"
+        <service android:name=".notifications.FirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_SERVICE" />
+                <action android:name="com.google.firebase.INSTANCE_ID_SERVICE"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".notifications.FirebaseMessaging"
+        <service android:name=".notifications.FirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

@@ -28,6 +28,7 @@ import com.example.donary.Event;
 import com.example.donary.EventAttendees;
 import com.example.donary.EventPost;
 import com.example.donary.EventPostCommentActivity;
+import com.example.donary.EventPostFullScreenImage;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
 import com.example.donary.models.ModelEventPost;
@@ -127,6 +128,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             }).addOnFailureListener(new OnFailureListener() { //IF there is no image for event post, imageView is hidden (object not found errors are expected)
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    viewHolder.eventPostImage.setClickable(false);
                     viewHolder.eventPostImage.setVisibility(View.GONE);
                 }
             });
@@ -216,6 +218,15 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                     Intent intent = new Intent(mContext, EventPostCommentActivity.class);
                     intent.putExtra("eventid", modelEventPost.getEventId());
                     intent.putExtra("commenter", modelEventPost.getEventPoster());
+                    mContext.startActivity(intent);
+                }
+            });
+
+            viewHolder.eventPostImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, EventPostFullScreenImage.class);
+                    intent.putExtra("eventid", modelEventPost.getEventId());
                     mContext.startActivity(intent);
                 }
             });

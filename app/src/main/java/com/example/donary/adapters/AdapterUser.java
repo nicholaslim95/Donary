@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
@@ -30,8 +31,10 @@ public class AdapterUser extends RecyclerView.Adapter<AdapterUser.ViewHolder> {
     private Context mContext;
     private List<UserProfile> mUsers;
 
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private FirebaseUser firebaseUser;
 
+    StorageReference storageReference;
     public AdapterUser(Context mContext, List<UserProfile> mUsers) {
         this.mContext = mContext;
         this.mUsers = mUsers;
@@ -46,13 +49,22 @@ public class AdapterUser extends RecyclerView.Adapter<AdapterUser.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //final UserProfile userProfile = mUsers.get(i);
         final String userName = mUsers.get(i).getUserName();
+        final String userId = mUsers.get(i).getUserID();
         //viewHolder.userName.setText(userProfile.getUserName());
         viewHolder.userName.setText(userName);
+
+        storageReference = firebaseStorage.getReference();
+        storageReference.child("Users").child(userId).child("Profile pic").child(userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).fit().centerCrop().into(viewHolder.imageProfile);
+            }
+        });
 
     }
 
