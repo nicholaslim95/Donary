@@ -8,16 +8,15 @@ public class UserProfile {
     public UserProfile(){
 
     }
-    public UserProfile( String userEmail, String userName, String uid) {
-        this.userEmail = userEmail;
+    public UserProfile(String userName, String uid) {
         this.userName = userName;
         this.uid = uid;
     }
 
-    public UserProfile (String userEmail, String userName) {
+    /*public UserProfile (String userEmail, String userName) {
         this.userEmail = userEmail;
         this.userName = userName;
-    }
+    }*/
 
     public String getUserEmail() {
         return userEmail;

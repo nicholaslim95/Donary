@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
 
-    private EditText newUsername, newUserEmail;
+    private EditText newUsername;
     private Button btn_save_profile_info, btn_change_password;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -62,7 +62,6 @@ public class UpdateProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
         newUsername = (EditText) findViewById(R.id.txtUpdateProfileName);
-        newUserEmail = (EditText) findViewById(R.id.txtUpdateProfileEmail);
         img_update_profile_pic = (ImageView) findViewById(R.id.imgUpdateProfilePic);
 
         btn_save_profile_info = (Button) findViewById(R.id.btnSaveProfileInformation);
@@ -90,7 +89,6 @@ public class UpdateProfile extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 newUsername.setText(userProfile.getUserName());
-                newUserEmail.setText(userProfile.getUserEmail());
             }
 
             @Override
@@ -103,26 +101,29 @@ public class UpdateProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = newUsername.getText().toString();
-                String email = newUserEmail.getText().toString();
 
-                UserProfile userProfile = new UserProfile(email, name,  firebaseAuth.getUid());
+                UserProfile userProfile = new UserProfile(name,  firebaseAuth.getUid());
 
                 databaseReference.setValue(userProfile);
 
-                StorageReference imageReference = storageReference.child("Users").child(firebaseAuth.getUid()).child("Profile pic").child(firebaseAuth.getUid());
-                UploadTask uploadTask = imageReference.putFile(imagePath);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UpdateProfile.this, "Upload failed", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(UpdateProfile.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                if(imagePath != null){
+                    StorageReference imageReference = storageReference.child("Users").child(firebaseAuth.getUid()).child("Profile pic").child(firebaseAuth.getUid());
+                    UploadTask uploadTask = imageReference.putFile(imagePath);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(UpdateProfile.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(UpdateProfile.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
                 Toast.makeText(UpdateProfile.this, "Profile updated.", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
 
