@@ -65,19 +65,16 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Name:              "/>
-
             <EditText
+                android:id="@+id/ettitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"
-                android:hint="Name"
-                android:id="@+id/ettitle"/>
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:hint="Enter item name"
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -85,43 +82,38 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Condition(%): "/>
-
             <EditText
+                android:id="@+id/etCondition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"
-                android:hint="90"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:hint="Enter item Condition : 85%"
                 android:inputType="number"
-                android:id="@+id/etCondition"/>
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Description:        "/>
 
             <EditText
                 android:id="@+id/etReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:hint="Description"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
                 android:ems="10"
+                android:gravity="start|center"
+                android:hint="Enter item description"
+                android:inputType="textMultiLine"
                 android:lines="5"
-                android:gravity="start|top"
-                android:inputType="textMultiLine" />
+                android:textAlignment="center" />
 
         </LinearLayout>
 

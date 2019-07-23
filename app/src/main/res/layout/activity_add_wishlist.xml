@@ -65,18 +65,15 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Name:              "/>
-
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"
-                android:hint="Name"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:hint="Enter wishlist item name"
+                android:textAlignment="center"
                 android:id="@+id/ettitle"/>
         </LinearLayout>
 
@@ -85,21 +82,19 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Reason:               "/>
-
             <EditText
                 android:id="@+id/etReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:hint="Reason"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:hint="Enter your reason"
                 android:ems="10"
                 android:lines="5"
-                android:gravity="start|top"
+                android:textAlignment="center"
+                android:gravity="start|center"
                 android:inputType="textMultiLine" />
 
         </LinearLayout>

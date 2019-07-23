@@ -12,6 +12,9 @@
             android:layout_height="match_parent"
             android:layout_margin="5dp"
             android:hint="Enter your request reason"
+            android:background="@drawable/edit_round"
+            android:textSize="20sp"
+            android:padding="10dp"
             android:textAlignment="center"
             android:id="@+id/requestreason"/>
 
@@ -20,6 +23,7 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
+            android:background="@drawable/custom_button"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:text="OK"
