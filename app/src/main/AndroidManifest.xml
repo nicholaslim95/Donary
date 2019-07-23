@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".EventPostCommentActivity"></activity>
+        <activity android:name=".EventPostFullScreenImage"></activity>
         <activity android:name=".EventAttendees" />
         <activity android:name=".FullScreenImageActivity" />
         <activity android:name=".ChatActivity" />
@@ -35,6 +36,9 @@
             android:label="@string/title_activity_homepage"
             android:theme="@style/AppTheme" />
         <activity android:name=".MainActivity">
+
+        </activity>
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
