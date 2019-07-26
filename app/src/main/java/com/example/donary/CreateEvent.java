@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CreateEvent extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
@@ -106,7 +107,7 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
                 Date currentDate = new Date();
 
                 boolean eventNameFilled = false, eventDetailsFilled = false, eventLocationFilled = false,
-                        eventStartDateLegitimate = false, eventEndDateLegitimate  = false, eventNoOfParticipantsFilled = false;
+                        eventDateLegitimate = false, eventNoOfParticipantsFilled = false;
 
                 //checking event details
                 if (eventName == null || eventName.isEmpty() || eventName.equals("")){
@@ -139,22 +140,28 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
                     Toast.makeText(CreateEvent.this, "How many people attending this event?", Toast.LENGTH_SHORT).show();
                 }
                 //if event time earlier than current time
-                if (startDate == null || endDate == null){
-                    Toast.makeText(CreateEvent.this, "Please make sure all dates are selected.", Toast.LENGTH_SHORT).show();
-                }
-                else if(startDate.after(endDate)){
-                    Toast.makeText(CreateEvent.this, "Starting date is later than ending date", Toast.LENGTH_SHORT).show();
-                }
-                else if(startDate.before(currentDate) || endDate.before(currentDate)) {
-                    Toast.makeText(CreateEvent.this, "Please make sure the date is after the current date", Toast.LENGTH_SHORT).show();
+                if (startDate != null || endDate != null){
+                    currentDate.setYear(currentDate.getYear() + 1900);
+                    if(startDate.after(currentDate)){
+                        if(startDate.before(endDate) || startDate.compareTo(endDate) == 0) {
+                            eventDateLegitimate = true;
+                        }else{
+                            Toast.makeText(CreateEvent.this, "Starting date is later than ending date", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        Toast.makeText(CreateEvent.this, "Please make sure the date is after the current date", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
-                    eventStartDateLegitimate = true;
-                    eventEndDateLegitimate = true;
+                    /*eventStartDateLegitimate = true;
+                    eventEndDateLegitimate = true;*/
+                    Toast.makeText(CreateEvent.this, "Please make sure all dates are selected.", Toast.LENGTH_SHORT).show();
                 }
 
+                //String testStarDate = startDate.toString();
+                //String testEndDate = endDate.toString();
                 if( eventNameFilled == true && eventDetailsFilled == true && eventLocationFilled == true &&
-                        eventStartDateLegitimate == true && eventEndDateLegitimate  == true && eventNoOfParticipantsFilled == true){
+                        eventDateLegitimate == true && eventNoOfParticipantsFilled == true){
                     if(imagePath != null){
                         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
                         DatabaseReference myRef = firebaseDatabase.getReference("Event");
@@ -254,28 +261,21 @@ public class CreateEvent extends AppCompatActivity implements DatePickerDialog.O
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         if(startEndDateidentifier == 1){
-            Calendar calendar = Calendar.getInstance();
+            Calendar calendar = new GregorianCalendar();
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             startDate = new Date(year, month, dayOfMonth);
-            System.out.println("year of startDate: " + startDate.getYear());
-            System.out.println("month of startDate: " + startDate.getMonth());
-            System.out.println("day of startDate: " + startDate.getDate());
             String currentDateString = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
             txtCreateEventStartDate.setText(currentDateString);
         }else if(startEndDateidentifier == 2){
-            Calendar calendar = Calendar.getInstance();
+            Calendar calendar = new GregorianCalendar();
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
             endDate = new Date(year, month, dayOfMonth);
-
-            System.out.println("year of endDate: " + endDate.getYear());
-            System.out.println("month of endDate: " + endDate.getMonth());
-            System.out.println("day of endDate: " + endDate.getDate());
             String currentDateString = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
             txtCreateEventEndDate.setText(currentDateString);
         }else{

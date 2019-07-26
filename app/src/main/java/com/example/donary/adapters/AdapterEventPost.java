@@ -55,8 +55,8 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
     public Context mContext;
     public List<ModelEventPost> mPost;
-
     String myUID;
+
     private FirebaseUser firebaseUser;
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private FirebaseDatabase firebaseDatabase;
@@ -80,10 +80,18 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
 
         //This is where we ge data and assign to viewholder
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //TO CHECK IF EVENT EXPIRED OR NOT
+        Date currentDate = new Date();
+        currentDate.setYear(currentDate.getYear() + 1900); //Needed after sdk 16
+        if(mPost.get(i).getEventEndDate().compareTo(currentDate) < 0 ){
+            mPost.get(i).setEventStatus("Expired");
+        }else{
+            mPost.get(i).setEventStatus("Valid");
+        }
 
-        if(mPost.get(i).getEventStatus().equals("Invalid")){
+        //WILL HIDE POST IF EVENT IS EITHER "DELETED" OR "EXPIRED"
+        if(mPost.get(i).getEventStatus().equals("Invalid") || mPost.get(i).getEventStatus().equals("Expired")){
             //Dont bind event as they have been "deleted". (Still in database)
-            //removeAt(viewHolder.getAdapterPosition());
             viewHolder.itemView.setVisibility(View.GONE);
             viewHolder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
         }else{
@@ -96,7 +104,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             final Date eventStartDate = mPost.get(i).getEventStartDate();
             eventStartDate.setYear(eventStartDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
             final Date eventEndDate = mPost.get(i).getEventEndDate();
-            eventEndDate.setYear(eventEndDate.getYear() - 1900);
+            eventEndDate.setYear(eventEndDate.getYear() - 1900); //After SDK 16, need to minus years after 1900
             //final String startDate = dateFormat.format(eventStartDate);
             //final String endDate = dateFormat.format(eventEndDate);
             final String startDate =  DateFormat.getDateInstance(DateFormat.FULL).format(eventStartDate);
@@ -116,6 +124,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             });
 
             //To apply event image into event post
+            //WILL HIDE LAYOUT IF EVENT IMAGE DOES NOT EXIST
             StorageReference eventImageStorageReference = firebaseStorage.getReference();
 
             viewHolder.eventPostImage.setVisibility(View.VISIBLE);
@@ -152,15 +161,11 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     ModelEventPost modelEventPost = dataSnapshot.getValue(ModelEventPost.class);
-
-                    //Profile image may be needed here
-
-                        viewHolder.eventName.setText(eventName);
-                        viewHolder.eventDescription.setText(eventDescription);
-                        viewHolder.eventStartDate.setText("Event starts at: " + startDate);
-                        viewHolder.eventEndDate.setText("Event ends at: " + endDate);
-                        viewHolder.eventLocation.setText("Event located at:\n" + eventLocation);
-
+                    viewHolder.eventName.setText(eventName);
+                    viewHolder.eventDescription.setText(eventDescription);
+                    viewHolder.eventStartDate.setText("Event starts at: " + startDate);
+                    viewHolder.eventEndDate.setText("Event ends at: " + endDate);
+                    viewHolder.eventLocation.setText("Event located at:\n" + eventLocation);
                 }
 
                 @Override
@@ -169,6 +174,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 }
             });
 
+            //ADDING IN THE MORE OPTION ON EVENT POST
             viewHolder.btnEventPostMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -176,19 +182,15 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 }
             });
 
-        /*viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent  = new Intent(mContext, EventAttendees.class);
-                intent.putExtra("id", userID);
-                intent.putExtra("title", "Attending");
-                mContext.startActivity(intent);
-            }
-        });*/
-
+            //TO CHECK WHETHER IF USER JOINED THIS PARTICULAR EVENT OR NOT
             isJoined(modelEventPost.getEventId(), viewHolder.btnJoinEvent);
+
+            //SHOW NUMBER OF ATTENDEES FOR PARTICULAR EVENT POST
             showNumberOfAttendees(viewHolder.numberOfParticipants, modelEventPost.getEventId());
+
+            //SHOW NUMBER OF COMMENTS FOR PARTICULAR EVENT POST
             showNumberOfComments(viewHolder.numberOfComments, modelEventPost.getEventId());
+
             viewHolder.btnJoinEvent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -202,6 +204,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 }
             });
 
+            //GET TO SEE WHO ATTEND THE EVENT
             viewHolder.numberOfParticipants.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -222,6 +225,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 }
             });
 
+            //ABLE TO VIEW ENLARGED EVENT IMAGE
             viewHolder.eventPostImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -231,7 +235,6 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 }
             });
         }
-
 
     }
 
@@ -266,6 +269,8 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
     }
 
     //To see if user had joined event
+
+    //WILL CHANGE LABEL ON ATTEND BUTTON DEPENDING IF USER ATTEND EVENT OR NOT
     private void isJoined(final String eventId, final Button btnJoinEvent){
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -331,6 +336,7 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
             }
         });
     }
+
     private void showMoreOptions(ImageButton btnEventPostMore, final String userID, String myUid, final String eventId) {
         //creating popup meny currently having option Delete,
         PopupMenu popupMenu = new PopupMenu(mContext, btnEventPostMore, Gravity.END);
@@ -432,7 +438,4 @@ public class AdapterEventPost extends RecyclerView.Adapter<AdapterEventPost.View
                 });*/
     }
 
-    public void removeAt(int position){
-        mPost.remove(position);
-    }
 }
