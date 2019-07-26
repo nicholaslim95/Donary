@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
 
-    private EditText newUsername;
+    private EditText newUsername, newWriteSomethingAboutYourself;
     private Button btn_save_profile_info, btn_change_password;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -62,6 +62,7 @@ public class UpdateProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
         newUsername = (EditText) findViewById(R.id.txtUpdateProfileName);
+        newWriteSomethingAboutYourself = (EditText) findViewById(R.id.txtUpdateProfileWriteSomething);
         img_update_profile_pic = (ImageView) findViewById(R.id.imgUpdateProfilePic);
 
         btn_save_profile_info = (Button) findViewById(R.id.btnSaveProfileInformation);
@@ -89,6 +90,7 @@ public class UpdateProfile extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 newUsername.setText(userProfile.getUserName());
+                newWriteSomethingAboutYourself.setText(userProfile.getWriteSomethingAboutYourself());
             }
 
             @Override
@@ -101,9 +103,9 @@ public class UpdateProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = newUsername.getText().toString();
-
+                String writeSomething = newWriteSomethingAboutYourself.getText().toString();
                 UserProfile userProfile = new UserProfile(name,  firebaseAuth.getUid());
-
+                userProfile.setWriteSomethingAboutYourself(writeSomething);
                 databaseReference.setValue(userProfile);
 
                 if(imagePath != null){

@@ -4,13 +4,14 @@ public class UserProfile {
     public String userEmail;
     public String userName;
     public String uid;
-
+    public String writeSomethingAboutYourself;
     public UserProfile(){
 
     }
     public UserProfile(String userName, String uid) {
         this.userName = userName;
         this.uid = uid;
+        this.writeSomethingAboutYourself="Write something about yourself";
     }
 
     /*public UserProfile (String userEmail, String userName) {
@@ -37,4 +38,8 @@ public class UserProfile {
     public String getUserID() { return uid; }
 
     public void setUserID(String userID) { this.uid = userID; }
+
+    public String getWriteSomethingAboutYourself() {return writeSomethingAboutYourself;}
+
+    public void setWriteSomethingAboutYourself(String writeSomethingAboutYourself) {this.writeSomethingAboutYourself = writeSomethingAboutYourself;}
 }

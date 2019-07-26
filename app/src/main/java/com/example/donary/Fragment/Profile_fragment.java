@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.donary.MainActivity;
-import com.example.donary.ProfileActivity;
 import com.example.donary.R;
 import com.example.donary.UpdateProfile;
 import com.example.donary.UserProfile;
@@ -38,7 +37,7 @@ public class Profile_fragment extends Fragment {
 
     Button btnCreateEvent;
 
-    private TextView txt_name, txt_email;
+    private TextView txt_name, txt_write_something;
     private Button btn_update_profile_info, btnLogout;
     private ImageView img_profilePicture;
     private FirebaseAuth firebaseAuth;
@@ -55,7 +54,7 @@ public class Profile_fragment extends Fragment {
 
         img_profilePicture = (ImageView) view.findViewById(R.id.imgProfilePicture);
         txt_name = (TextView) view.findViewById(R.id.txtProfileName);
-        txt_email = (TextView) view.findViewById(R.id.txtProfileEmail);
+        txt_write_something = (TextView) view.findViewById(R.id.txtProfileWriteSomething);
         btn_update_profile_info = (Button) view.findViewById(R.id.btnUpdateProfileInfo);
         btnLogout = (Button) view.findViewById(R.id.btnLogout);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -92,7 +91,7 @@ public class Profile_fragment extends Fragment {
                 System.out.println("datasnapshotb stuff" + dataSnapshot.getValue(UserProfile.class));
                 System.out.println("userProfileActivity" + userProfile.getUserName());
                 txt_name.setText(name);
-                txt_email.setText(userProfile.getUserEmail());
+                txt_write_something.setText(userProfile.getWriteSomethingAboutYourself());
             }
 
             @Override

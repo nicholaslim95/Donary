@@ -36,13 +36,13 @@
         app:layout_constraintTop_toBottomOf="@+id/imgUpdateProfilePic" />
 
     <EditText
-        android:id="@+id/txtUpdateProfileEmail"
+        android:id="@+id/txtUpdateProfileWriteSomething"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_round"
         android:ems="10"
-        android:hint="Email"
-        android:inputType="textPersonName"
+        android:hint="Write something about yourself"
+        android:inputType="textMultiLine"
         android:padding="10dp"
         android:layout_margin="10dp"
         android:textAlignment="center"
@@ -59,9 +59,9 @@
         android:layout_marginTop="108dp"
         android:background="@drawable/custom_button"
         android:text="Save"
-        app:layout_constraintEnd_toEndOf="@+id/txtUpdateProfileEmail"
-        app:layout_constraintStart_toStartOf="@+id/txtUpdateProfileEmail"
-        app:layout_constraintTop_toBottomOf="@+id/txtUpdateProfileEmail" />
+        app:layout_constraintEnd_toEndOf="@+id/txtUpdateProfileWriteSomething"
+        app:layout_constraintStart_toStartOf="@+id/txtUpdateProfileWriteSomething"
+        app:layout_constraintTop_toBottomOf="@+id/txtUpdateProfileWriteSomething" />
 
     <Button
         android:id="@+id/btnChangePassword"
