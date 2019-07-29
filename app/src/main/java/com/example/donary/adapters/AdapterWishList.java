@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.donary.AddWishlistActivity;
 import com.example.donary.ChatActivity;
 import com.example.donary.CommentsActivity;
+import com.example.donary.FullScreenImageActivity;
 import com.example.donary.ProfileActivity;
 import com.example.donary.R;
 import com.example.donary.UserProfile;
@@ -119,6 +120,15 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
         myHolder.pTitleTv.setText(ptitle +  " - "+pStatus);
         myHolder.pDescriptionTv.setText(pdescription);
         myHolder.pTimeTv.setText(sTime);
+
+        myHolder.pImageIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent fullScreenIntent = new Intent(context, FullScreenImageActivity.class);
+                fullScreenIntent.setData(Uri.parse(pImage));
+                context.startActivity(fullScreenIntent);
+            }
+        });
 
         try {
             Picasso.get().load(pImage).into(myHolder.pImageIv);

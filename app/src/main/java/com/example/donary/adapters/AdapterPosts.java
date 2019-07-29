@@ -394,10 +394,20 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                                             }
                                         }
                                     } else {
-                                        button.setText("Donated");
-                                        button.setTextColor(Color.rgb(255, 255, 255));
-                                        button.setBackgroundColor(Color.rgb(255, 0, 0));
-                                        button.setEnabled(false);
+                                        //show to requester the status is accepted
+                                        String tmp1 = firebaseUser.getUid();
+                                        String tmp2 = requestSnap.child(tmp1).child("status").getValue().toString();
+                                        if(tmp2.equals("Accepted")){
+                                            button.setText("Accepted");
+                                            button.setTextColor(Color.rgb(255, 255, 255));
+                                            button.setBackgroundColor(Color.rgb(0, 255, 0));
+                                            button.setEnabled(false);
+                                        }else {
+                                            button.setText("Donated");
+                                            button.setTextColor(Color.rgb(255, 255, 255));
+                                            button.setBackgroundColor(Color.rgb(255, 0, 0));
+                                            button.setEnabled(false);
+                                        }
                                     }
                                 }
 
