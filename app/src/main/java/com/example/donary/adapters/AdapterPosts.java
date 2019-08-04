@@ -85,6 +85,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         String pCondition = postList.get(i).getCondition();
         final String donateid = postList.get(i).getDonateid();
         String pdescription = postList.get(i).getDescription();
+        String pQuantity = postList.get(i).getQuantity();
         String pTime = postList.get(i).getTime();
         String pStatus = postList.get(i).getStatus();
 
@@ -123,8 +124,13 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         });
 
         //set the post data
-        myHolder.pTitleTv.setText(ptitle + " - (" + pCondition + "% new) - " + pStatus);
-        myHolder.pDescriptionTv.setText(pdescription);
+        myHolder.pTitleTv.setText(ptitle + " - (" + pCondition + "% new and "+ pStatus+")");
+        myHolder.pQuantityTv.setText("Quantity: " + pQuantity);
+        if(pdescription.equals("")){
+            myHolder.pDescriptionTv.setVisibility(View.GONE);
+        }else{
+            myHolder.pDescriptionTv.setText(pdescription);
+        }
         myHolder.pTimeTv.setText(sTime);
 
         try {
@@ -481,7 +487,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
 
         //views from row_post.xml
         ImageView pImageIv, uPicturerIv;
-        TextView pTitleTv, pInterestTv, pCommentTv, uNameTv, pDescriptionTv, pTimeTv;
+        TextView pTitleTv, pInterestTv, pCommentTv, uNameTv, pDescriptionTv, pTimeTv, pQuantityTv;
         ImageButton moreBtm, commentBtn;
         Button requestBtn;
         LinearLayout profileLayout;
@@ -498,6 +504,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pInterestTv = itemView.findViewById(R.id.pInterestTv);
             pCommentTv = itemView.findViewById(R.id.pCommentTv);
+            pQuantityTv = itemView.findViewById(R.id.pQuantityTv);
             moreBtm = itemView.findViewById(R.id.moreBtn);
             requestBtn = itemView.findViewById(R.id.requestBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);

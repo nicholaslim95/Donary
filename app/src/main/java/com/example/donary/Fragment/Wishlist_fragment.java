@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -85,10 +84,12 @@ public class Wishlist_fragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 wishlist.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    ModelWishlist modelWishlist =  ds.getValue(ModelWishlist.class);
-                    wishlist.add(modelWishlist);
-                    adapterWishList = new AdapterWishList(getContext(), wishlist);
-                    recyclerView.setAdapter(adapterWishList);
+                    if(ds.child("status").getValue().equals("Available")){
+                        ModelWishlist modelWishlist =  ds.getValue(ModelWishlist.class);
+                        wishlist.add(modelWishlist);
+                        adapterWishList = new AdapterWishList(getContext(), wishlist);
+                        recyclerView.setAdapter(adapterWishList);
+                    }
                 }
             }
 

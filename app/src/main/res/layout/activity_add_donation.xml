@@ -101,6 +101,24 @@
             android:orientation="horizontal">
 
             <EditText
+                android:id="@+id/etQuantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_round"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:hint="Enter item quantity"
+                android:inputType="number"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
                 android:id="@+id/etReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -48,11 +48,11 @@ public class AddDonationActivity extends AppCompatActivity {
 
     ImageView back, image_added;
     TextView donate;
-    EditText Title, etDescription, etCondition;
+    EditText Title, etDescription, etCondition, etQuantity;
 
 
     //info of donation post to be edited
-    String editTitle, editDescription, editCondition, editImage;
+    String editTitle, editDescription, editCondition, editImage, editQuantity;
 
     //check the image view got image or not
     private boolean hasImage(@NonNull ImageView view) {
@@ -77,6 +77,7 @@ public class AddDonationActivity extends AppCompatActivity {
         Title = findViewById(R.id.ettitle);
         etDescription = findViewById(R.id.etReason);
         etCondition = findViewById(R.id.etCondition);
+        etQuantity = findViewById(R.id.etQuantity);
 
         storageReference = FirebaseStorage.getInstance().getReference("donates");
         firebaseAuth = FirebaseAuth.getInstance();
@@ -163,6 +164,7 @@ public class AddDonationActivity extends AppCompatActivity {
             hashMap.put("description", etDescription.getText().toString());
             hashMap.put("condition", etCondition.getText().toString());
             hashMap.put("donater",   user.getUid());
+            hashMap.put("quantity",   etQuantity.getText().toString());
             hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
             hashMap.put("status",   "Available");
 
@@ -211,6 +213,7 @@ public class AddDonationActivity extends AppCompatActivity {
                                             hashMap.put("description", etDescription.getText().toString());
                                             hashMap.put("condition", etCondition.getText().toString());
                                             hashMap.put("donater", user.getUid());
+                                            hashMap.put("quantity",   etQuantity.getText().toString());
                                             hashMap.put("time", String.valueOf(System.currentTimeMillis()));
                                             hashMap.put("status", "Available");
 
@@ -261,6 +264,8 @@ public class AddDonationActivity extends AppCompatActivity {
                     editTitle = ""+ds.child("title").getValue();
                     editDescription = ""+ds.child("description").getValue();
                     editCondition = ""+ds.child("condition").getValue();
+                    etQuantity.setEnabled(false);
+                    editQuantity = ""+ds.child("quantity").getValue();
                     editImage = ""+ds.child("posImage").getValue();
 
                     //set data to views
@@ -308,6 +313,9 @@ public class AddDonationActivity extends AppCompatActivity {
         }else if(etCondition.getText().toString().equals("")){
             Toast.makeText(AddDonationActivity.this, "Condition cannot empty", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
+        }else if(etQuantity.getText().toString().equals("")){
+            Toast.makeText(AddDonationActivity.this, "Quantity cannot empty", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
         }else {
                 final StorageReference filereference = storageReference.child(System.currentTimeMillis()
                         + "." +getFileExtension(imageUri));
@@ -340,6 +348,7 @@ public class AddDonationActivity extends AppCompatActivity {
                                 hashMap.put("description", etDescription.getText().toString());
                                 hashMap.put("condition", etCondition.getText().toString());
                                 hashMap.put("donater",   user.getUid());
+                                hashMap.put("quantity",   etQuantity.getText().toString());
                                 hashMap.put("time",   String.valueOf(System.currentTimeMillis()));
                                 hashMap.put("status",   "Available");
 

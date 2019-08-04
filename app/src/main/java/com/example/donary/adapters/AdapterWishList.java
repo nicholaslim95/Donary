@@ -200,8 +200,9 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
             //add item into menu
             popupMenu.getMenu().add(Menu.NONE,0,0, "Delete");
             popupMenu.getMenu().add(Menu.NONE,1,0, "Edit");
+            popupMenu.getMenu().add(Menu.NONE,2,0, "Successful");
         }else{
-            popupMenu.getMenu().add(Menu.NONE,2,0, "Message");
+            popupMenu.getMenu().add(Menu.NONE,3,0, "Message");
         }
 
         //item click listener
@@ -222,6 +223,9 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
                     context.startActivity(intent);
                 }
                 else if(id==2){
+                    changestatus(wishlistId);
+                }
+                else if(id==3){
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.putExtra("hisUid",requester);
                     context.startActivity(intent);
@@ -232,6 +236,23 @@ public class AdapterWishList extends RecyclerView.Adapter<AdapterWishList.MyHold
 
         //show menu;
         popupMenu.show();
+    }
+
+    private void changestatus(String wishlistId) {
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Wishlist")
+                .child(wishlistId);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                reference.child("status").setValue("Unavailable");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void beginDelete(String wishlisid, String pImage) {

@@ -121,26 +121,64 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notify= true;
+                notify = true;
+                final int[] quantity = new int[1];
+                final int[] fixloop = {1}; //fix the bug purpose
                 final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
                         .child(request.getDonateid());
 
                 final DatabaseReference donateRef = FirebaseDatabase.getInstance().getReference("donates");
+                donateRef.child(request.getDonateid()).child("quantity").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        quantity[0] = Integer.parseInt(dataSnapshot.getValue().toString());
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 //once the user choose the requester, will update the firebase donated item status and also request status.
                 reference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            if (ds.getKey().equals(request.getRequester())) {
-                                reference.child(ds.getKey()).child("status").setValue("Accepted");
-                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "accepted your request.");
-                            } else {
-                                reference.child(ds.getKey()).child("status").setValue("Rejected");
-                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "rejected your request.");
+                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot1) {
+
+                        donateRef.child(request.getDonateid()).child("quantity").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                if(fixloop[0] > 0){
+                                    //if the item only left 1, after accept the last acceptor, will auto reject others
+                                    if (dataSnapshot.getValue().equals("1")) {
+                                        for (DataSnapshot ds : dataSnapshot1.getChildren()) {
+                                            if (ds.getKey().equals(request.getRequester())) {
+                                                reference.child(ds.getKey()).child("status").setValue("Accepted");
+                                                donateRef.child(request.getDonateid()).child("quantity").setValue(String.valueOf(quantity[0] - 1));
+                                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "accepted your request.");
+                                            } else {
+                                                reference.child(ds.getKey()).child("status").setValue("Rejected");
+                                                addNotification(ds.getKey(), ds.child("donateid").getValue().toString(), "rejected your request.");
+                                            }
+                                        }
+                                    } else if (Integer.parseInt(dataSnapshot.getValue().toString()) >= 2) {
+                                        reference.child(request.getRequester()).child("status").setValue("Accepted");
+                                        donateRef.child(request.getDonateid()).child("quantity").setValue(String.valueOf(quantity[0] - 1));
+                                        addNotification(request.getRequester(), request.getDonateid(), "accepted your request.");
+                                    }
+                                    fixloop[0]--;
+                                }
+
+                                if (dataSnapshot.getValue().equals("0")) {
+                                    donateRef.child(request.getDonateid()).child("status").setValue("Donated");
+                                }
                             }
-                        }
-                        donateRef.child(request.getDonateid()).child("status").setValue("Donated");
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                         Toast.makeText(context, "Donate Successful", Toast.LENGTH_SHORT).show();
                     }
 
@@ -156,7 +194,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         myHolder.rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notify= true;
+                notify = true;
                 final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Request")
                         .child(request.getDonateid());
 
@@ -261,48 +299,48 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.getValue() == null){
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("userid", firebaseUser.getUid());
-                        hashMap.put("text", notiText);
-                        hashMap.put("postid", postid);
+                if (dataSnapshot.getValue() == null) {
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("userid", firebaseUser.getUid());
+                    hashMap.put("text", notiText);
+                    hashMap.put("postid", postid);
 
-                        reference.child(postid).setValue(hashMap);
+                    reference.child(postid).setValue(hashMap);
 
-                        String msg = notiText;
-                        final DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-                        database.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                UserProfile user = dataSnapshot.getValue(UserProfile.class);
+                    String msg = notiText;
+                    final DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+                    database.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            UserProfile user = dataSnapshot.getValue(UserProfile.class);
 
-                                if(notify){
-                                    sendNotification(userid, user.getUserName(), notiText);
-                                }
-                                notify = false;
+                            if (notify) {
+                                sendNotification(userid, user.getUserName(), notiText);
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                    //used this to avoid save 2 times same data into firebase
-                    else{
-                        for(DataSnapshot ds : dataSnapshot.getChildren()){
-                            String existPost = ds.child("postid").getValue().toString();
-                            if(!existPost.equals(postid)){
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("userid", firebaseUser.getUid());
-                                hashMap.put("text", notiText);
-                                hashMap.put("postid", postid);
-                                hashMap.put("ispost", "havent");
-
-                                reference.child(postid).setValue(hashMap);
+                            notify = false;
                         }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+                //used this to avoid save 2 times same data into firebase
+                else {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        String existPost = ds.child("postid").getValue().toString();
+                        if (!existPost.equals(postid)) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("userid", firebaseUser.getUid());
+                            hashMap.put("text", notiText);
+                            hashMap.put("postid", postid);
+                            hashMap.put("ispost", "havent");
+
+                            reference.child(postid).setValue(hashMap);
                         }
                     }
+                }
             }
 
             @Override
@@ -319,9 +357,9 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Token token = ds.getValue(Token.class);
-                    Data data = new Data(firebaseUser.getUid(), userName + " " +notiText,
+                    Data data = new Data(firebaseUser.getUid(), userName + " " + notiText,
                             "New Notification", userid, R.drawable.accept);
 
                     Sender sender = new Sender(data, token.getToken());
@@ -329,7 +367,7 @@ public class AdapterRequests extends RecyclerView.Adapter<AdapterRequests.MyHold
                             .enqueue(new Callback<Response>() {
                                 @Override
                                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                                    Toast.makeText(context, ""+response.message(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "" + response.message(), Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override

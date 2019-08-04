@@ -2,12 +2,12 @@ package com.example.donary.models;
 
 public class ModelPost {
 
-    String donateid, posImage, donater, title, description, condition, time, status; //all postTitle were originally title
+    String donateid, posImage, donater, title, description, condition, time, status, quantity; //all postTitle were originally title
 
     public ModelPost() {
     }
 
-    public ModelPost(String donateid, String posImage, String donater, String title, String description, String condition, String time, String status) {
+    public ModelPost(String donateid, String posImage, String donater, String title, String description, String condition, String time, String status, String quantity) {
         this.donateid = donateid;
         this.posImage = posImage;
         this.donater = donater;
@@ -16,6 +16,7 @@ public class ModelPost {
         this.condition = condition;
         this.time = time;
         this.status = status;
+        this.quantity = quantity;
     }
 
     public String getDonateid() {
@@ -80,5 +81,13 @@ public class ModelPost {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 }

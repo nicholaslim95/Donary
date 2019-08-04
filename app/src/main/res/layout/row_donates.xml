@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/cardview_light_background"
     app:cardCornerRadius="3dp"
     app:cardElevation="3dp"
     app:cardUseCompatPadding="true"
-    app:contentPadding="5dp"
-    app:cardBackgroundColor="@color/cardview_light_background">
+    app:contentPadding="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,83 +18,93 @@
             android:id="@+id/profileLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <com.blogspot.atifsoftwares.circularimageview.CircularImageView
                 android:id="@+id/uPictureIv"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_default_img"
                 android:layout_width="50dp"
-                android:layout_height="50dp"/>
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_default_img" />
 
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/uNameTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
                     android:paddingLeft="10dp"
                     android:text="Name"
-                    android:textSize="20sp"/>
+                    android:textColor="@color/colorBlack"
+                    android:textSize="20sp" />
+
                 <TextView
                     android:id="@+id/pTimeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="10dp"
-                    android:text="33 min"/>
+                    android:text="33 min" />
 
             </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/moreBtn"
-            android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/moreBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:src="@drawable/ic_more_black"></ImageButton>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pTitleTv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:src="@drawable/ic_more_black">
-        </ImageButton>
+            android:autoLink="all"
+            android:text="Title"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    </LinearLayout>
-    <TextView
-        android:id="@+id/pTitleTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:autoLink="all"
-        android:text="Title"/>
-    <TextView
-        android:id="@+id/pDescriptionTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="The description of the donation post"
-        android:autoLink="all"/>
+        <TextView
+            android:id="@+id/pQuantityTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:text="Quantity" />
 
-    <ImageView
-        android:id="@+id/pImageIv"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:background="@color/cardview_light_background"/>
+        <TextView
+            android:id="@+id/pDescriptionTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:text="The description of the donation post" />
+
+        <ImageView
+            android:id="@+id/pImageIv"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:background="@color/cardview_light_background"
+            android:scaleType="centerCrop" />
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
                 android:id="@+id/pInterestTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="15 peoples Interested"
                 android:layout_alignParentLeft="true"
-                android:textColor="@color/colorPrimary"/>
+                android:text="15 peoples Interested"
+                android:textColor="@color/colorPrimary" />
 
             <TextView
                 android:id="@+id/pCommentTv"
@@ -102,42 +112,42 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:text="10 comments"
-                android:textColor="@color/quantum_grey"/>
+                android:textColor="@color/quantum_grey" />
 
         </RelativeLayout>
 
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#F5F0F0"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F5F0F0" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/requestBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:background="@color/cardview_light_background"
-            android:drawablePadding="5dp"
-            android:text="Request" />
+            <Button
+                android:id="@+id/requestBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@color/cardview_light_background"
+                android:drawablePadding="5dp"
+                android:text="Request" />
 
-        <ImageButton
-            android:id="@+id/commentBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:layout_weight="1"
-            android:background="@color/cardview_light_background"
-            android:drawablePadding="5dp"
-            android:src="@drawable/ic_comment"
-            android:scaleType="centerInside"/>
+            <ImageButton
+                android:id="@+id/commentBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@color/cardview_light_background"
+                android:drawablePadding="5dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_comment" />
 
         </LinearLayout>
 

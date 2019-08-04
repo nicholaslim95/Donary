@@ -85,7 +85,7 @@ public class Donate_fragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 postList.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    if(ds.child("status").getValue().equals("Available")){
+                    if(!ds.child("quantity").getValue().equals("0")){
                         ModelPost modelPost =  ds.getValue(ModelPost.class);
                         postList.add(modelPost);
                         adapterPosts = new AdapterPosts(getContext(),postList);
