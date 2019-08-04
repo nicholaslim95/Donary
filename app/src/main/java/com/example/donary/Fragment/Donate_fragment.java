@@ -85,10 +85,12 @@ public class Donate_fragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 postList.clear();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    ModelPost modelPost =  ds.getValue(ModelPost.class);
-                    postList.add(modelPost);
-                    adapterPosts = new AdapterPosts(getContext(),postList);
-                    recyclerView.setAdapter(adapterPosts);
+                    if(ds.child("status").getValue().equals("Available")){
+                        ModelPost modelPost =  ds.getValue(ModelPost.class);
+                        postList.add(modelPost);
+                        adapterPosts = new AdapterPosts(getContext(),postList);
+                        recyclerView.setAdapter(adapterPosts);
+                    }
                 }
             }
 

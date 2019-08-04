@@ -232,6 +232,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         getComments(post.getDonateid(), myHolder.pCommentTv);
         isRequest(post.getDonateid(), myHolder.requestBtn);
         nrRequests(myHolder.pInterestTv, post.getDonateid());
+
     }
 
     private void getComments(String donateid, final TextView comments) {
@@ -396,12 +397,23 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                                     } else {
                                         //show to requester the status is accepted
                                         String tmp1 = firebaseUser.getUid();
-                                        String tmp2 = requestSnap.child(tmp1).child("status").getValue().toString();
-                                        if(tmp2.equals("Accepted")){
-                                            button.setText("Accepted");
-                                            button.setTextColor(Color.rgb(255, 255, 255));
-                                            button.setBackgroundColor(Color.rgb(0, 255, 0));
-                                            button.setEnabled(false);
+                                        if(requestSnap.child(tmp1).exists()) {
+                                            String tmp2 = requestSnap.child(tmp1).child("status").getValue().toString();
+                                            if (tmp2.equals("Accepted")) {
+                                                button.setText("Accepted");
+                                                button.setTextColor(Color.rgb(255, 255, 255));
+                                                button.setBackgroundColor(Color.rgb(0, 255, 0));
+                                                button.setEnabled(false);
+                                            } else {
+                                                button.setText("Donated");
+                                                button.setTextColor(Color.rgb(255, 255, 255));
+                                                button.setBackgroundColor(Color.rgb(255, 0, 0));
+                                                button.setEnabled(false);
+                                            }
+                                        }
+                                        else if(tmp1.equals(donaterSnap.getValue()))
+                                        {
+                                            button.setText("View Requests");
                                         }else {
                                             button.setText("Donated");
                                             button.setTextColor(Color.rgb(255, 255, 255));
