@@ -7,9 +7,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -123,9 +124,15 @@ public class AddWishlistActivity extends AppCompatActivity {
         image_added.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CropImage.activity()
-                .setAspectRatio(1,1)
-                .start(AddWishlistActivity.this);
+                ImagePicker.with(AddWishlistActivity.this)
+                        .crop()	    			//Crop image(Optional), Check Customization for more option
+                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                        .start();
+//                For Android 11 and below
+//                CropImage.activity()
+//                .setAspectRatio(1,1)
+//                .start(AddWishlistActivity.this);
             }
         });
 
@@ -356,17 +363,21 @@ public class AddWishlistActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            imageUri = result.getUri();
-
-            image_added.setImageURI(imageUri);
-        }
-        else
-        {
-            Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
-            finish();
-        }
+//        For Android 11 and above
+        imageUri = data.getData();
+        image_added.setImageURI(imageUri);
+//        For Android 11 and below
+//        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//            imageUri = result.getUri();
+//
+//            image_added.setImageURI(imageUri);
+//        }
+//        else
+//        {
+//            Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(AddWishlistActivity.this, Homepage.class));
+//            finish();
+//        }
     }
 }

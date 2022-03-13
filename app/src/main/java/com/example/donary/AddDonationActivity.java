@@ -1,14 +1,20 @@
 package com.example.donary;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
@@ -17,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -124,9 +131,15 @@ public class AddDonationActivity extends AppCompatActivity {
         image_added.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CropImage.activity()
-                .setAspectRatio(1,1)
-                .start(AddDonationActivity.this);
+                ImagePicker.with(AddDonationActivity.this)
+                        .crop()	    			//Crop image(Optional), Check Customization for more option
+                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                        .start();
+//                For Android 11 and below
+//                CropImage.activity()
+//                .setAspectRatio(1,1)
+//                .start(AddDonationActivity.this);
             }
         });
 
@@ -377,17 +390,21 @@ public class AddDonationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            imageUri = result.getUri();
+        imageUri = data.getData();
+        image_added.setImageURI(imageUri);
 
-            image_added.setImageURI(imageUri);
-        }
-        else
-        {
-            Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
-            finish();
-        }
+//        For Android 11 and below
+//        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//            imageUri = result.getUri();
+//
+//            image_added.setImageURI(imageUri);
+//        }
+//        else
+//        {
+//            Toast.makeText(this,"Something goes wrong", Toast.LENGTH_SHORT).show();
+//            startActivity(new Intent(AddDonationActivity.this, Homepage.class));
+//            finish();
+//        }
     }
 }

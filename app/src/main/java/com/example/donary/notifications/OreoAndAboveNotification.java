@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 public class OreoAndAboveNotification extends ContextWrapper {
     private static final String ID = "some_id";
